@@ -1,9 +1,10 @@
 // src/components/layout/DashboardLayout.jsx
 import { useState } from 'react';
 import Sidebar from './Sidebar';
-import { FiMenu, FiShield } from 'react-icons/fi';
+import { FiMenu } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
+import SEO from '../common/SEO';
 
 export default function DashboardLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -11,6 +12,11 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: '#0B1220' }}>
+      <SEO
+        title="Dashboard — Cybreva Online Safety Platform"
+        description="Cybreva authenticated security dashboard. Analyze messages, check emails, verify websites, and consult AI assistant."
+        noindex={true}
+      />
       {/* Desktop sidebar */}
       <div className="hidden md:flex flex-shrink-0">
         <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
@@ -34,10 +40,11 @@ export default function DashboardLayout({ children }) {
             <FiMenu size={20} />
           </button>
           <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg,#10B981,#06B6D4)' }}>
-              <FiShield className="text-white text-xs" />
-            </div>
+            <img
+              src="/logo.png"
+              alt="Cybreva Logo"
+              className="w-6 h-6 object-contain"
+            />
             <span className="font-bold text-white text-sm">Cybreva</span>
           </Link>
           <div className="w-8" />

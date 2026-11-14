@@ -22,4 +22,4 @@ Disallow: /login
 Disallow: /register
 Disallow: /forgot-password
 
-Sitemap: https://cybreva.com/sitemap.xml
+Sitemap: https://cybreva.vercel.app/sitemap.xml

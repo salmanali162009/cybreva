@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { FiMail } from 'react-icons/fi';
 import { authApi } from '../../services/api';
 import toast from 'react-hot-toast';
+import SEO from '../../components/common/SEO';
 
 export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
@@ -26,6 +27,12 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4" style={{ background: '#0B1220' }}>
+      <SEO
+        title="Reset Password — Cybreva Account Recovery"
+        description="Request account recovery and password reset instructions for your Cybreva online security account."
+        canonical="https://cybreva.com/forgot-password"
+        noindex={true}
+      />
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-4 group" title="Return to Cybreva Home">

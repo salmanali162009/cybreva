@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useForm } from 'react-hook-form';
 import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import SEO from '../../components/common/SEO';
 
 export default function RegisterPage() {
   const { register: registerUser } = useAuth();
@@ -31,6 +32,12 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-10" style={{ background: '#0B1220' }}>
+      <SEO
+        title="Create Free Account — Cybreva AI Scam Protection"
+        description="Join Cybreva for free. Protect against smishing, phishing emails, and malicious website links with instant AI threat intelligence and personal scan history."
+        canonical="https://cybreva.com/register"
+        noindex={true}
+      />
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-4 group" title="Return to Cybreva Home">
