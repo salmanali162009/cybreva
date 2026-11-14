@@ -24,18 +24,35 @@ const scanSchema = new mongoose.Schema(
     },
     riskLevel: {
       type: String,
-      enum: Object.values(RISK_LEVELS),
+      enum: [
+        'low', 'medium', 'high', 'critical', 'unknown',
+        'LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 'UNKNOWN',
+      ],
       required: true,
+      set: (v) => (typeof v === 'string' ? v.toLowerCase() : v),
     },
     riskScore: {
       type: Number,
       min: 0,
       max: 100,
-      required: true,
+      default: null,
+    },
+    assessmentStatus: {
+      type: String,
+      enum: ['completed', 'partial', 'failed'],
+      default: 'completed',
+    },
+    assessmentLimitations: {
+      type: [String],
+      default: [],
     },
     summary: {
       type: String,
-      maxlength: 2000,
+      maxlength: 3000,
+    },
+    aiAnalysis: {
+      type: String,
+      maxlength: 3000,
     },
     detectedIndicators: {
       type: [String],

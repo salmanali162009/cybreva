@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useForm } from 'react-hook-form';
-import { FiShield, FiUser, FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
 export default function RegisterPage() {
@@ -33,11 +33,12 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center px-4 py-10" style={{ background: '#0B1220' }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg,#10B981,#06B6D4)' }}>
-              <FiShield className="text-white" size={20} />
-            </div>
+          <Link to="/" className="inline-flex items-center gap-2 mb-4 group" title="Return to Cybreva Home">
+            <img
+              src="/logo.png"
+              alt="Cybreva Logo"
+              className="w-14 h-14 object-contain transition-transform group-hover:scale-105 mx-auto"
+            />
           </Link>
           <h1 className="text-2xl font-bold text-white">Create your account</h1>
           <p className="text-slate-400 text-sm mt-1">Start protecting yourself for free</p>

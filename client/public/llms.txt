@@ -1,0 +1,32 @@
+# Cybreva (Check Before You Trust)
+> Cybreva is an AI-powered scam, phishing, and online threat intelligence verification platform.
+
+## Overview
+Cybreva provides multi-layered heuristics, rule-based detection, real-time threat intelligence lookup, and generative security advisory to help global internet users identify fraudulent messages, malicious links, phishing emails, and online scams before interacting or sending payments.
+
+## Core Services & Capabilities
+- **Message Scam Checker**: Detects urgency pressure tactics, advance-fee fraud, fake prize claims, lottery scams, OTP/PIN theft, and authority impersonation in SMS and chat messages.
+- **Email Scam Checker**: Evaluates sender domain validity, brand spoofing, reply-to anomalies, high-risk TLDs, and suspicious embedded URLs in email content.
+- **Website Safety Checker**: Performs heuristic analysis on domain syntax, homographs, raw IPs, and suspicious paths, combined with real-time threat intelligence (Google Safe Browsing & VirusTotal).
+- **AI Security Assistant**: An educational assistant that explains scam mechanics, safe browsing practices, and immediate incident recovery steps in clear, non-technical language.
+
+## Architecture & Evaluation Limitations
+- **Heuristic Engine**: Deterministic pattern matching with weighted severity (Low, Medium, High, Critical).
+- **Threat Intelligence**: Integrates Google Safe Browsing Lookup v4 / Google Web Risk v1 and VirusTotal API v3.
+- **AI Context**: Powered by Groq AI SDK (`qwen/qwen3.8-27b`) acting as an explanatory layer. AI analyses never override deterministic indicators.
+- **Limitations**: Cybreva provides informed security assessments, not guarantees. Clean threat intelligence results indicate absence in known threat databases, not absolute safety. New or targeted phishing domains may evade early database catalogs. Cryptographic email verification (SPF, DKIM, DMARC) requires raw RFC822 MIME headers.
+
+## Key Public Resources
+- Website: https://cybreva.com
+- Security Features: https://cybreva.com/features
+- How It Works & Transparency: https://cybreva.com/about
+- Transparent Pricing: https://cybreva.com/pricing
+- Contact & Support: https://cybreva.com/contact
+- Educational Blog: https://cybreva.com/blog
+- Privacy Policy: https://cybreva.com/privacy
+- Terms of Service: https://cybreva.com/terms
+
+## Contact & Editorial Information
+- Publisher: Cybreva Security Research & Product Team
+- Email: contact@cybreva.com
+- Editorial Guidelines: All security articles and educational content are reviewed by application security specialists.

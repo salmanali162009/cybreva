@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { FiShield, FiMessageSquare, FiMail, FiGlobe, FiCpu, FiCheck, FiArrowRight, FiChevronDown } from 'react-icons/fi';
 import { useState } from 'react';
 import MainLayout from '../../components/layout/MainLayout';
+import SEO from '../../components/common/SEO';
 
 const FEATURES = [
   { icon: FiMessageSquare, title: 'Message Scanner', color: '#10B981', desc: 'Detect phishing language, urgency tactics, and scam patterns in any text message.' },
@@ -44,8 +45,59 @@ function FaqItem({ q, a }) {
 }
 
 export default function HomePage() {
+  const orgSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Cybreva',
+    alternateName: 'Cybreva AI',
+    url: 'https://cybreva.com',
+    logo: 'https://cybreva.com/logo.png',
+    description: 'Global AI-powered scam, phishing, and malicious threat detection platform.',
+    sameAs: [
+      'https://twitter.com/cybreva',
+      'https://github.com/cybreva'
+    ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      email: 'support@cybreva.com',
+      contactType: 'Customer Support'
+    }
+  };
+
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Cybreva',
+    url: 'https://cybreva.com',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: 'https://cybreva.com/blog?q={search_term_string}',
+      'query-input': 'required name=search_term_string'
+    }
+  };
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: FAQS.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.a
+      }
+    }))
+  };
+
   return (
     <MainLayout>
+      <SEO
+        title="Cybreva — AI-Powered Online Safety & Scam Detection"
+        description="Verify suspicious text messages, emails, and website links before you trust. Real-time scam detection powered by AI and global threat intelligence."
+        canonical="https://cybreva.com/"
+        keywords="scam checker, phishing detector, safe browsing, url safety check, sms scam detection, ai security, online threat intelligence"
+        schema={[orgSchema, websiteSchema, faqSchema]}
+      />
       {/* Hero */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden">
         {/* Background gradient */}

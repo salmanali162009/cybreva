@@ -6,45 +6,82 @@ export default function Footer() {
   return (
     <footer className="border-t border-white/5 mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-10">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-                style={{ background: 'linear-gradient(135deg,#10B981,#06B6D4)' }}>
-                <FiShield className="text-white text-xs" />
-              </div>
-              <span className="font-bold text-white">Cybreva</span>
+            <div className="flex items-center gap-2.5 mb-3">
+              <img
+                src="/logo.png"
+                alt="Cybreva Logo"
+                className="w-7 h-7 object-contain"
+              />
+              <span className="font-bold text-white tracking-tight">Cybreva</span>
             </div>
-            <p className="text-slate-500 text-sm">Check Before You Trust.</p>
-            <p className="text-slate-600 text-xs mt-2">
-              AI-powered scam detection for everyone.
+            <p className="text-slate-400 text-sm font-medium">Check Before You Trust.</p>
+            <p className="text-slate-500 text-xs mt-2 leading-relaxed">
+              Global AI-powered scam and malicious threat detection platform.
             </p>
           </div>
 
           <div>
-            <h4 className="text-white text-sm font-semibold mb-3">Product</h4>
+            <h4 className="text-white text-sm font-semibold mb-3">Platform</h4>
             <ul className="space-y-2">
-              {[['/', 'Home'], ['/pricing', 'Pricing'], ['/about', 'About']].map(([to, label]) => (
-                <li key={to}><Link to={to} className="text-slate-500 text-sm hover:text-slate-300 transition-colors">{label}</Link></li>
+              {[
+                ['/', 'Home'],
+                ['/features', 'Features'],
+                ['/pricing', 'Pricing'],
+                ['/about', 'About Cybreva'],
+                ['/contact', 'Contact & Support']
+              ].map(([to, label]) => (
+                <li key={to}><Link to={to} className="text-slate-400 text-sm hover:text-white transition-colors">{label}</Link></li>
               ))}
             </ul>
           </div>
 
           <div>
-            <h4 className="text-white text-sm font-semibold mb-3">Scanners</h4>
+            <h4 className="text-white text-sm font-semibold mb-3">Threat Scanners</h4>
             <ul className="space-y-2">
-              {[['/dashboard/message', 'Message Checker'], ['/dashboard/email', 'Email Checker'], ['/dashboard/website', 'Website Checker'], ['/dashboard/ai', 'AI Assistant']].map(([to, label]) => (
-                <li key={to}><Link to={to} className="text-slate-500 text-sm hover:text-slate-300 transition-colors">{label}</Link></li>
+              {[
+                ['/scanners/message', 'Message Checker'],
+                ['/scanners/email', 'Email Checker'],
+                ['/scanners/website', 'Website Safety'],
+                ['/ai-assistant', 'AI Assistant'],
+                ['/dashboard', 'User Dashboard']
+              ].map(([to, label]) => (
+                <li key={to}><Link to={to} className="text-slate-400 text-sm hover:text-white transition-colors">{label}</Link></li>
               ))}
             </ul>
           </div>
 
           <div>
-            <h4 className="text-white text-sm font-semibold mb-3">Legal</h4>
+            <h4 className="text-white text-sm font-semibold mb-3">Resources & GEO</h4>
             <ul className="space-y-2">
-              {[['/privacy', 'Privacy Policy'], ['/terms', 'Terms of Service']].map(([to, label]) => (
-                <li key={to}><Link to={to} className="text-slate-500 text-sm hover:text-slate-300 transition-colors">{label}</Link></li>
+              {[
+                ['/blog', 'Security Blog'],
+                ['/blog/how-to-identify-a-scam-website', 'Scam Website Guide'],
+                ['/blog/how-to-recognize-phishing-emails', 'Phishing Identification'],
+                ['/sitemap.xml', 'XML Sitemap'],
+                ['/llms.txt', 'LLMs Reference']
+              ].map(([to, label]) => (
+                <li key={to}>
+                  {to.endsWith('.xml') || to.endsWith('.txt') ? (
+                    <a href={to} target="_blank" rel="noopener noreferrer" className="text-slate-400 text-sm hover:text-white transition-colors">{label}</a>
+                  ) : (
+                    <Link to={to} className="text-slate-400 text-sm hover:text-white transition-colors">{label}</Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-white text-sm font-semibold mb-3">Legal & Trust</h4>
+            <ul className="space-y-2">
+              {[
+                ['/privacy', 'Privacy Policy'],
+                ['/terms', 'Terms of Service']
+              ].map(([to, label]) => (
+                <li key={to}><Link to={to} className="text-slate-400 text-sm hover:text-white transition-colors">{label}</Link></li>
               ))}
             </ul>
           </div>

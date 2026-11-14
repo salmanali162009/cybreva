@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /features
+Allow: /pricing
+Allow: /contact
+Allow: /blog
+Allow: /blog/
+Allow: /privacy
+Allow: /terms
+Allow: /scanners/message
+Allow: /scanners/email
+Allow: /scanners/website
+Allow: /ai-assistant
+Allow: /llms.txt
+
+# Disallow private user areas, authentication, and sensitive APIs
+Disallow: /dashboard/
+Disallow: /dashboard
+Disallow: /api/
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+
+Sitemap: https://cybreva.com/sitemap.xml

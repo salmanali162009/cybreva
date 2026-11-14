@@ -50,6 +50,7 @@ body {
 
 .risk-low    { color: #10B981; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); }
 .risk-medium { color: #F59E0B; background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); }
+.risk-critical { color: #F87171; background: rgba(220,38,38,0.18); border: 1px solid rgba(220,38,38,0.45); }
 .risk-high   { color: #EF4444; background: rgba(239,68,68,0.12);  border: 1px solid rgba(239,68,68,0.3); }
 .risk-unknown{ color: #94A3B8; background: rgba(148,163,184,0.12);border: 1px solid rgba(148,163,184,0.3); }
 

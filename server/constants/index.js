@@ -3,10 +3,11 @@
 // ─────────────────────────────────────────────
 
 export const RISK_LEVELS = Object.freeze({
-  LOW: 'LOW',
-  MEDIUM: 'MEDIUM',
-  HIGH: 'HIGH',
-  UNKNOWN: 'UNKNOWN',
+  LOW: 'low',
+  MEDIUM: 'medium',
+  HIGH: 'high',
+  CRITICAL: 'critical',
+  UNKNOWN: 'unknown',
 });
 
 export const SCAN_TYPES = Object.freeze({

@@ -6,10 +6,11 @@ import { FiShield, FiMenu, FiX, FiUser } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
 const NAV_LINKS = [
-  { to: '/#features', label: 'Features' },
-  { to: '/#how-it-works', label: 'How It Works' },
+  { to: '/features', label: 'Features' },
+  { to: '/blog', label: 'Blog' },
   { to: '/pricing', label: 'Pricing' },
   { to: '/about', label: 'About' },
+  { to: '/contact', label: 'Contact' },
 ];
 
 export default function Navbar() {
@@ -30,12 +31,13 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group" onClick={() => setOpen(false)}>
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg,#10B981,#06B6D4)' }}>
-              <FiShield className="text-white text-sm" />
-            </div>
-            <span className="font-bold text-lg text-white">Cybreva</span>
+          <Link to="/" className="flex items-center gap-2.5 group" onClick={() => setOpen(false)}>
+            <img
+              src="/logo.png"
+              alt="Cybreva Logo"
+              className="w-8 h-8 object-contain transition-transform group-hover:scale-105"
+            />
+            <span className="font-bold text-lg text-white tracking-tight">Cybreva</span>
           </Link>
 
           {/* Desktop nav */}

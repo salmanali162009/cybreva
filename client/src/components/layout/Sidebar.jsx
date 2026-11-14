@@ -46,19 +46,23 @@ export default function Sidebar({ collapsed, setCollapsed }) {
       <div className={clsx('flex items-center h-16 border-b border-white/5 px-4',
         collapsed ? 'justify-center' : 'justify-between')}>
         {!collapsed && (
-          <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg,#10B981,#06B6D4)' }}>
-              <FiShield className="text-white text-xs" />
-            </div>
-            <span className="font-bold text-white text-sm">Cybreva</span>
+          <Link to="/dashboard" className="flex items-center gap-2.5">
+            <img
+              src="/logo.png"
+              alt="Cybreva Logo"
+              className="w-8 h-8 object-contain"
+            />
+            <span className="font-bold text-white text-sm tracking-tight">Cybreva</span>
           </Link>
         )}
         {collapsed && (
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg,#10B981,#06B6D4)' }}>
-            <FiShield className="text-white text-xs" />
-          </div>
+          <Link to="/dashboard" title="Cybreva Dashboard" className="flex items-center justify-center">
+            <img
+              src="/logo.png"
+              alt="Cybreva Logo"
+              className="w-8 h-8 object-contain"
+            />
+          </Link>
         )}
         <button onClick={() => setCollapsed(!collapsed)}
           className={clsx('text-slate-500 hover:text-white transition-colors', collapsed && 'hidden')}>

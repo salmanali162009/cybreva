@@ -15,6 +15,7 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
     scansByRiskLevel,
     recentScans,
     highRiskCount,
+    criticalRiskCount,
   ] = await Promise.all([
     // Total scans
     Scan.countDocuments({ userId }),
@@ -35,11 +36,20 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
     Scan.find({ userId })
       .sort({ createdAt: -1 })
       .limit(5)
-      .select('scanType riskLevel riskScore originalInput createdAt')
+      .select('scanType riskLevel riskScore originalInput createdAt assessmentStatus')
       .lean(),
 
-    // High-risk scans count
-    Scan.countDocuments({ userId, riskLevel: RISK_LEVELS.HIGH }),
+    // High + Critical scans count
+    Scan.countDocuments({
+      userId,
+      riskLevel: { $in: ['high', 'critical', 'HIGH', 'CRITICAL'] },
+    }),
+
+    // Critical scans count specifically
+    Scan.countDocuments({
+      userId,
+      riskLevel: { $in: ['critical', 'CRITICAL'] },
+    }),
   ]);
 
   // Normalise aggregation results into flat objects
@@ -47,19 +57,39 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
     Object.values(SCAN_TYPES).map((t) => [t, 0]),
   );
   for (const { _id, count } of scansByType) {
-    if (_id) byType[_id] = count;
+    if (_id) byType[_id.toLowerCase()] = count;
   }
 
-  const byRiskLevel = Object.fromEntries(
-    Object.values(RISK_LEVELS).map((r) => [r, 0]),
-  );
+  // Normalise risk levels to lowercase and provide uppercase aliases
+  const byRiskLevel = {
+    low: 0,
+    medium: 0,
+    high: 0,
+    critical: 0,
+    unknown: 0,
+  };
   for (const { _id, count } of scansByRiskLevel) {
-    if (_id) byRiskLevel[_id] = count;
+    if (_id) {
+      const key = String(_id).toLowerCase();
+      if (byRiskLevel[key] !== undefined) {
+        byRiskLevel[key] += count;
+      } else {
+        byRiskLevel[key] = count;
+      }
+    }
   }
+
+  // Backwards compatibility aliases
+  byRiskLevel.LOW = byRiskLevel.low;
+  byRiskLevel.MEDIUM = byRiskLevel.medium;
+  byRiskLevel.HIGH = byRiskLevel.high;
+  byRiskLevel.CRITICAL = byRiskLevel.critical;
+  byRiskLevel.UNKNOWN = byRiskLevel.unknown;
 
   return sendSuccess(res, 200, 'Dashboard statistics retrieved.', {
     totalScans,
     highRiskCount,
+    criticalRiskCount,
     byType,
     byRiskLevel,
     recentScans,

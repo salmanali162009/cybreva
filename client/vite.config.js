@@ -29,6 +29,9 @@ export default defineConfig({
           if (id.includes('node_modules/react-hook-form') || id.includes('node_modules/zod')) {
             return 'forms';
           }
+          if (id.includes('node_modules/react-markdown') || id.includes('node_modules/remark-gfm')) {
+            return 'markdown';
+          }
         },
       },
     },

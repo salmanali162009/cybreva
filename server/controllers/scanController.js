@@ -5,34 +5,73 @@ import Scan from '../models/Scan.js';
 import { asyncHandler, sendSuccess, isValidObjectId } from '../utils/helpers.js';
 import { AppError } from '../utils/AppError.js';
 import { validate, messageScanSchema, emailScanSchema, websiteScanSchema } from '../validators/index.js';
-import { detectTextIndicators, calculateRiskScore, scoreToRiskLevel, buildRecommendations } from '../services/scanners/textAnalyzer.js';
+import {
+  detectWeightedIndicators,
+  calculateWeightedScore,
+  scoreToRiskLevel,
+  analyzeUrlHeuristics,
+  buildStandardRecommendations,
+  createStandardResult,
+  INDICATOR_WEIGHTS,
+} from '../services/scanners/riskEngine.js';
 import { parseAndValidateUrl, normalizeUrl } from '../services/scanners/urlUtils.js';
 import { analyzeWithGroq } from '../services/ai/groqService.js';
 import { checkGoogleThreatIntelligence } from '../services/threat-intelligence/googleWebRisk.js';
 import { checkVirusTotal } from '../services/threat-intelligence/virusTotal.js';
-import { AI_DISCLAIMER, SCAN_TYPES } from '../constants/index.js';
+import { AI_DISCLAIMER, SCAN_TYPES, RISK_LEVELS } from '../constants/index.js';
 import { getPagination } from '../utils/helpers.js';
+
+// Helper to extract URLs from text
+const extractUrlsFromText = (text) => {
+  const urlRegex = /https?:\/\/[^\s<>"'{}|\\^`[\]]+/gi;
+  return text.match(urlRegex) || [];
+};
 
 // ── POST /api/scans/message ───────────────────
 export const scanMessage = asyncHandler(async (req, res) => {
   const { message } = validate(messageScanSchema, req.body);
 
-  const detectedIndicators = detectTextIndicators(message);
-  const riskScore = calculateRiskScore(detectedIndicators);
+  // 1. Text indicators
+  const indicators = detectWeightedIndicators(message);
+
+  // 2. Extract and check any embedded URLs
+  const embeddedUrls = extractUrlsFromText(message);
+  for (const rawUrl of embeddedUrls.slice(0, 5)) {
+    const urlIndicators = analyzeUrlHeuristics(rawUrl);
+    for (const uInd of urlIndicators) {
+      if (!indicators.some((i) => i.id === uInd.id)) {
+        indicators.push(uInd);
+      }
+    }
+  }
+
+  // 3. Compute score and risk level
+  const riskScore = calculateWeightedScore(indicators);
   const riskLevel = scoreToRiskLevel(riskScore);
-  const recommendations = buildRecommendations(riskLevel, detectedIndicators);
+  const detectedLabels = indicators.map((i) => i.label);
 
-  // Get AI explanation (non-blocking; falls back gracefully)
-  const aiSummary = await analyzeWithGroq(message, 'message');
-
-  const result = {
+  // 4. AI explanation
+  const aiResult = await analyzeWithGroq(message, 'message', {
+    detectedIndicators: detectedLabels,
     riskLevel,
     riskScore,
-    summary: aiSummary,
-    detectedIndicators,
-    recommendations,
+  });
+
+  const aiAnalysis = aiResult.text || String(aiResult);
+  const assessmentStatus = aiResult.available ? 'completed' : 'partial';
+  const assessmentLimitations = aiResult.available
+    ? []
+    : ['AI deep analysis is temporarily unavailable; results are based on heuristic rule detection.'];
+
+  const result = createStandardResult({
+    riskScore,
+    riskLevel,
+    detectedIndicators: detectedLabels,
+    aiAnalysis,
+    assessmentStatus,
+    assessmentLimitations,
     disclaimer: AI_DISCLAIMER,
-  };
+  });
 
   // Persist scan for authenticated users
   let scanRecord = null;
@@ -55,7 +94,6 @@ export const scanMessage = asyncHandler(async (req, res) => {
 export const scanEmail = asyncHandler(async (req, res) => {
   const data = validate(emailScanSchema, req.body);
 
-  // Build combined text for analysis
   const combined = [
     data.subject ? `Subject: ${data.subject}` : '',
     data.sender ? `From: ${data.sender}` : '',
@@ -64,37 +102,82 @@ export const scanEmail = asyncHandler(async (req, res) => {
     .filter(Boolean)
     .join('\n\n');
 
-  const detectedIndicators = detectTextIndicators(combined);
+  // 1. Detect indicators across subject and body
+  const indicators = detectWeightedIndicators(combined);
 
-  // Additional email-specific checks
+  // 2. Additional sender-specific checks
   if (data.sender) {
-    const senderLower = data.sender.toLowerCase();
-    // Spoofed display name (e.g. "PayPal <attacker@evil.com>")
-    if (/paypal|amazon|apple|microsoft|google|facebook|netflix|bank/i.test(data.sender)) {
-      detectedIndicators.push('Brand impersonation in sender address');
+    const sender = data.sender.toLowerCase();
+    // Brand impersonation in sender
+    if (/(?:paypal|amazon|apple|microsoft|google|facebook|netflix|chase|bank)/i.test(data.sender)) {
+      if (!indicators.some((i) => i.id === 'SENDER_BRAND_IMPERSONATION')) {
+        indicators.push({
+          id: 'SENDER_BRAND_IMPERSONATION',
+          severity: 'HIGH',
+          label: 'Brand impersonation in sender display name or address',
+          weight: INDICATOR_WEIGHTS.HIGH,
+        });
+      }
     }
-    // Sender domain mismatch check (heuristic)
-    if (senderLower.includes('@') && senderLower.split('@')[1]?.match(/\.(xyz|top|click|tk|ml|ga|cf|gq)$/)) {
-      detectedIndicators.push('Suspicious sender domain (free or abused TLD)');
+    // Abused or high-risk TLD in sender domain
+    if (sender.includes('@')) {
+      const domainPart = sender.split('@')[1] || '';
+      if (domainPart.match(/\.(xyz|top|click|tk|ml|ga|cf|gq|buzz|fit|work|rest)$/)) {
+        if (!indicators.some((i) => i.id === 'SENDER_SUSPICIOUS_TLD')) {
+          indicators.push({
+            id: 'SENDER_SUSPICIOUS_TLD',
+            severity: 'HIGH',
+            label: 'Suspicious sender domain (free or abused top-level domain)',
+            weight: INDICATOR_WEIGHTS.HIGH,
+          });
+        }
+      }
     }
   }
 
-  const riskScore = calculateRiskScore(detectedIndicators);
+  // 3. Extract and check any embedded links in the email body
+  const embeddedUrls = extractUrlsFromText(data.body);
+  for (const rawUrl of embeddedUrls.slice(0, 5)) {
+    const urlIndicators = analyzeUrlHeuristics(rawUrl);
+    for (const uInd of urlIndicators) {
+      if (!indicators.some((i) => i.id === uInd.id)) {
+        indicators.push(uInd);
+      }
+    }
+  }
+
+  // 4. Compute calibrated score and risk level
+  const riskScore = calculateWeightedScore(indicators);
   const riskLevel = scoreToRiskLevel(riskScore);
-  const recommendations = buildRecommendations(riskLevel, detectedIndicators);
+  const detectedLabels = indicators.map((i) => i.label);
 
-  const aiSummary = await analyzeWithGroq(combined, 'email');
-
-  const result = {
+  // 5. AI explanation
+  const aiResult = await analyzeWithGroq(combined, 'email', {
+    detectedIndicators: detectedLabels,
     riskLevel,
     riskScore,
-    summary: aiSummary,
-    detectedIndicators,
-    recommendations,
+  });
+
+  const aiAnalysis = aiResult.text || String(aiResult);
+  const assessmentStatus = aiResult.available ? 'completed' : 'partial';
+  const assessmentLimitations = [
+    'Email sender headers (SPF, DKIM, DMARC) cannot be cryptographically verified without raw RFC822 MIME headers.',
+  ];
+  if (!aiResult.available) {
+    assessmentLimitations.push('AI deep analysis is temporarily unavailable; results are based on heuristic rule detection.');
+  }
+
+  const result = createStandardResult({
+    riskScore,
+    riskLevel,
+    detectedIndicators: detectedLabels,
+    aiAnalysis,
+    assessmentStatus,
+    assessmentLimitations,
     disclaimer:
       AI_DISCLAIMER +
-      ' This tool cannot verify the true origin or identity of an email sender.',
-  };
+      ' This tool cannot verify the cryptographic authenticity of an email sender.',
+  });
 
   let scanRecord = null;
   if (req.user) {
@@ -116,102 +199,139 @@ export const scanEmail = asyncHandler(async (req, res) => {
 export const scanWebsite = asyncHandler(async (req, res) => {
   const { url } = validate(websiteScanSchema, req.body);
 
-  // Validate and normalise URL (throws on private IPs, bad schemes, etc.)
+  // 1. Validate and normalise URL (SSRF and IP filtering)
   const normalized = normalizeUrl(url);
   const parsed = parseAndValidateUrl(url);
   const domain = parsed.hostname;
 
-  // Query external threat intelligence providers in parallel
+  // 2. Run heuristic threat analysis on domain and path
+  const heuristicIndicators = analyzeUrlHeuristics(normalized);
+
+  // 3. Query external threat intelligence providers in parallel
   const [googleResult, vtResult] = await Promise.all([
     checkGoogleThreatIntelligence(normalized),
     checkVirusTotal(normalized),
   ]);
 
-  // Compile detected threats
+  // Compile detected threats from threat intelligence
   const detectedThreats = [];
-  if (googleResult.threats.length > 0) {
+  if (googleResult.threats?.length > 0) {
     detectedThreats.push(...googleResult.threats.map((t) => `[${googleResult.provider}] ${t}`));
   }
   if (vtResult.available && vtResult.malicious > 0) {
-    detectedThreats.push(`[VirusTotal] ${vtResult.malicious} engine(s) flagged this URL as malicious`);
+    detectedThreats.push(`[VirusTotal] ${vtResult.malicious} security vendor(s) flagged this URL as malicious`);
   }
   if (vtResult.available && vtResult.suspicious > 0) {
-    detectedThreats.push(`[VirusTotal] ${vtResult.suspicious} engine(s) flagged this URL as suspicious`);
+    detectedThreats.push(`[VirusTotal] ${vtResult.suspicious} security vendor(s) flagged this URL as suspicious`);
   }
 
-  // Compute risk score
-  let riskScore = 5;
-  if (googleResult.threats.length > 0) riskScore = Math.max(riskScore, 90);
-  if (vtResult.available) {
-    const vtBad = vtResult.malicious + vtResult.suspicious;
-    if (vtBad > 0) riskScore = Math.max(riskScore, Math.min(95, 40 + vtBad * 5));
+  // Combine heuristic indicator labels with threat intelligence detections
+  const allIndicators = [
+    ...detectedThreats,
+    ...heuristicIndicators.map((h) => h.label),
+  ];
+
+  // 4. Distinguish four concrete assessment states:
+  // State 1: Confirmed Threat Intelligence Match
+  // State 2: Suspicious Heuristic Indicators
+  // State 3: Clean (Threat intel queried with no match, heuristics clean)
+  // State 4: Unable to Assess (Threat intel unavailable, heuristics clean/ambiguous)
+
+  const threatIntelAvailable = googleResult.available || vtResult.available;
+  let riskScore = 0;
+  let riskLevel = RISK_LEVELS.LOW;
+  let assessmentStatus = 'completed';
+  const assessmentLimitations = [];
+
+  if (detectedThreats.length > 0) {
+    // State 1: Confirmed Threat Intel Match
+    const vtBad = (vtResult.malicious || 0) + (vtResult.suspicious || 0);
+    riskScore = Math.min(98, Math.max(90, 85 + vtBad * 2));
+    riskLevel = RISK_LEVELS.CRITICAL;
+    assessmentStatus = 'completed';
+  } else if (heuristicIndicators.length > 0) {
+    // State 2: Suspicious Heuristics
+    riskScore = calculateWeightedScore(heuristicIndicators);
+    riskLevel = scoreToRiskLevel(riskScore);
+    assessmentStatus = threatIntelAvailable ? 'completed' : 'partial';
+    if (!threatIntelAvailable) {
+      assessmentLimitations.push(
+        'External threat intelligence databases were unavailable; assessment is based on local URL heuristic analysis.',
+      );
+    }
+  } else if (threatIntelAvailable) {
+    // State 3: No Known Threat Found
+    riskScore = 10;
+    riskLevel = RISK_LEVELS.LOW;
+    assessmentStatus = 'completed';
+    assessmentLimitations.push(
+      'No active threat records found in Google Safe Browsing or VirusTotal. Note that brand-new or targeted phishing URLs may not yet appear in public threat databases.',
+    );
+  } else {
+    // State 4: Unable to assess
+    riskScore = null;
+    riskLevel = RISK_LEVELS.UNKNOWN;
+    assessmentStatus = 'partial';
+    assessmentLimitations.push(
+      'Threat intelligence services (Google Safe Browsing / VirusTotal) are currently unavailable or unconfigured.',
+      'Assessment is limited to URL syntax validation; safe browsing status cannot be determined.',
+    );
   }
 
-  // If neither service was available, mark as UNKNOWN
-  const anyAvailable = googleResult.available || vtResult.available;
-  const riskLevel = !anyAvailable
-    ? 'UNKNOWN'
-    : detectedThreats.length > 0
-    ? 'HIGH'
-    : riskScore >= 35
-    ? 'MEDIUM'
-    : 'LOW';
+  // 5. AI explanation
+  const aiPrompt =
+    `URL: ${normalized}\n` +
+    `Domain: ${domain}\n` +
+    `Detected threats / indicators: ${allIndicators.join(', ') || 'None detected'}\n` +
+    `Assessment State: ${riskLevel} (Score: ${riskScore ?? 'N/A'})\n` +
+    `Threat Intel: Google (${googleResult.available ? 'Available' : 'Unavailable'}), VirusTotal (${vtResult.available ? 'Available' : 'Unavailable'})`;
 
-  const recommendations =
-    riskLevel === 'HIGH'
-      ? [
-          'Do NOT visit this website.',
-          'If you have already visited it, change any passwords you may have entered.',
-          'Run a malware scan on your device.',
-          'Report this URL to your browser and internet service provider.',
-        ]
-      : riskLevel === 'UNKNOWN'
-      ? [
-          'Threat intelligence services are currently unavailable.',
-          'Exercise caution before visiting this site.',
-          'Check the URL manually against a reputable service such as Google Safe Browsing.',
-        ]
-      : [
-          'No known threats detected at this time.',
-          'This result does not guarantee the site is completely safe.',
-          'Always verify domain spelling carefully before entering personal information.',
-        ];
+  const aiResult = await analyzeWithGroq(aiPrompt, 'website', {
+    detectedIndicators: allIndicators,
+    riskLevel,
+    riskScore,
+  });
 
-  // AI explanation
-  const aiPrompt = `URL: ${normalized}\nDomain: ${domain}\nDetected threats: ${detectedThreats.join(', ') || 'None detected'}\nRisk Level: ${riskLevel}`;
-  const explanation = await analyzeWithGroq(aiPrompt, 'website');
+  const aiAnalysis = aiResult.text || String(aiResult);
+  if (!aiResult.available) {
+    assessmentLimitations.push('AI summary service was temporarily unavailable.');
+  }
 
   const providerResults = {
     google: {
       provider: googleResult.provider,
       available: googleResult.available,
-      threats: googleResult.threats,
+      threats: googleResult.threats || [],
       note: googleResult.note,
     },
     virustotal: {
       provider: vtResult.provider,
       available: vtResult.available,
-      malicious: vtResult.malicious,
-      suspicious: vtResult.suspicious,
-      harmless: vtResult.harmless,
-      total: vtResult.total,
+      malicious: vtResult.malicious || 0,
+      suspicious: vtResult.suspicious || 0,
+      harmless: vtResult.harmless || 0,
+      total: vtResult.total || 0,
       note: vtResult.note,
     },
   };
 
-  const result = {
-    riskLevel,
+  const result = createStandardResult({
     riskScore,
-    domain,
-    url: normalized,
-    detectedThreats,
-    providerResults,
-    explanation,
-    recommendations,
+    riskLevel,
+    detectedIndicators: allIndicators,
+    aiAnalysis,
+    assessmentStatus,
+    assessmentLimitations,
     disclaimer:
       AI_DISCLAIMER +
       ' A clean result from threat intelligence providers does not guarantee that a website is completely safe.',
-  };
+    metadata: {
+      domain,
+      url: normalized,
+      detectedThreats,
+      providerResults,
+    },
+  });
 
   let scanRecord = null;
   if (req.user) {
@@ -219,11 +339,14 @@ export const scanWebsite = asyncHandler(async (req, res) => {
       userId: req.user._id,
       scanType: SCAN_TYPES.WEBSITE,
       originalInput: normalized.slice(0, 2000),
-      riskLevel,
-      riskScore,
-      summary: explanation,
-      detectedIndicators: detectedThreats,
-      recommendations,
+      riskLevel: result.riskLevel,
+      riskScore: result.riskScore,
+      summary: result.aiAnalysis,
+      aiAnalysis: result.aiAnalysis,
+      detectedIndicators: result.detectedIndicators,
+      recommendations: result.recommendations,
+      assessmentStatus: result.assessmentStatus,
+      assessmentLimitations: result.assessmentLimitations,
       providerResults,
       disclaimer: result.disclaimer,
     });

@@ -7,6 +7,11 @@ import ErrorBoundary from './components/common/ErrorBoundary';
 
 // Public pages
 import HomePage from './pages/public/HomePage';
+import FeaturesPage from './pages/public/FeaturesPage';
+import ContactPage from './pages/public/ContactPage';
+import BlogListingPage from './pages/public/BlogListingPage';
+import BlogPostPage from './pages/public/BlogPostPage';
+import PublicScannerPage from './pages/public/PublicScannerPage';
 import AboutPage from './pages/public/AboutPage';
 import PricingPage from './pages/public/PricingPage';
 import PrivacyPage from './pages/public/PrivacyPage';
@@ -48,10 +53,22 @@ export default function App() {
           }}
         />
         <Routes>
-          {/* Public */}
+          {/* Public Pages */}
           <Route path="/" element={<HomePage />} />
+          <Route path="/features" element={<FeaturesPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/blog" element={<BlogListingPage />} />
+          <Route path="/blog/:slug" element={<BlogPostPage />} />
+
+          {/* Public Scanner Landing Pages (SEO & GEO) */}
+          <Route path="/scanners/message" element={<PublicScannerPage type="message" />} />
+          <Route path="/scanners/email" element={<PublicScannerPage type="email" />} />
+          <Route path="/scanners/website" element={<PublicScannerPage type="website" />} />
+          <Route path="/ai-assistant" element={<PublicScannerPage type="ai" />} />
+
+          {/* Legal */}
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
 

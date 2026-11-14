@@ -85,9 +85,15 @@ export default function ScanHistoryPage() {
                     <p className="text-slate-600 text-xs mt-0.5">{formatDate(scan.createdAt)}</p>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
+                    {scan.riskScore !== null && scan.riskScore !== undefined && (
+                      <span className="text-xs text-slate-400 font-mono hidden sm:inline">
+                        {Math.round(scan.riskScore)}/100
+                      </span>
+                    )}
                     <RiskBadge level={scan.riskLevel} size="sm" />
                     <button onClick={() => handleDelete(scan._id)}
-                      className="text-slate-600 hover:text-red-400 transition-colors p-1">
+                      className="text-slate-600 hover:text-red-400 transition-colors p-1"
+                      title="Delete scan">
                       <FiTrash2 size={14} />
                     </button>
                   </div>

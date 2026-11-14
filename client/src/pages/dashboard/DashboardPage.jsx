@@ -12,7 +12,14 @@ import { FiMessageSquare, FiMail, FiGlobe, FiCpu, FiAlertTriangle, FiShield, FiC
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { formatDate, SCAN_TYPE_LABELS } from '../../utils/riskUtils';
 
-const RISK_COLORS = { HIGH: '#EF4444', MEDIUM: '#F59E0B', LOW: '#10B981', UNKNOWN: '#94A3B8' };
+const RISK_DISPLAY = {
+  critical: { label: 'Critical Risk', color: '#DC2626' },
+  high:     { label: 'High Risk',     color: '#EF4444' },
+  medium:   { label: 'Medium Risk',   color: '#F59E0B' },
+  low:      { label: 'Low Risk',      color: '#10B981' },
+  unknown:  { label: 'Unavailable',   color: '#94A3B8' },
+};
+
 const STAT_ICONS = { message: FiMessageSquare, email: FiMail, website: FiGlobe };
 
 export default function DashboardPage() {
@@ -36,9 +43,18 @@ export default function DashboardPage() {
   useEffect(() => { fetchStats(); }, []);
 
   const pieData = stats
-    ? Object.entries(stats.byRiskLevel)
-        .filter(([, v]) => v > 0)
-        .map(([k, v]) => ({ name: k, value: v, color: RISK_COLORS[k] }))
+    ? ['critical', 'high', 'medium', 'low', 'unknown']
+        .map((k) => {
+          const count = stats.byRiskLevel[k] !== undefined
+            ? stats.byRiskLevel[k]
+            : (stats.byRiskLevel[k.toUpperCase()] || 0);
+          return {
+            name: RISK_DISPLAY[k].label,
+            value: count,
+            color: RISK_DISPLAY[k].color,
+          };
+        })
+        .filter((d) => d.value > 0)
     : [];
 
   const typeData = stats
@@ -71,16 +87,25 @@ export default function DashboardPage() {
                 <p className="text-3xl font-bold text-white">{stats.totalScans}</p>
               </GlassCard>
               <GlassCard>
-                <p className="text-slate-400 text-xs mb-1">High Risk</p>
-                <p className="text-3xl font-bold text-red-400">{stats.highRiskCount}</p>
+                <p className="text-slate-400 text-xs mb-1">Threats Detected</p>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-3xl font-bold text-red-400">{stats.highRiskCount}</p>
+                  {stats.criticalRiskCount > 0 && (
+                    <span className="text-xs text-red-300 font-semibold">({stats.criticalRiskCount} critical)</span>
+                  )}
+                </div>
               </GlassCard>
               <GlassCard>
                 <p className="text-slate-400 text-xs mb-1">Medium Risk</p>
-                <p className="text-3xl font-bold text-amber-400">{stats.byRiskLevel.MEDIUM || 0}</p>
+                <p className="text-3xl font-bold text-amber-400">
+                  {stats.byRiskLevel.medium ?? stats.byRiskLevel.MEDIUM ?? 0}
+                </p>
               </GlassCard>
               <GlassCard>
                 <p className="text-slate-400 text-xs mb-1">Low Risk</p>
-                <p className="text-3xl font-bold text-emerald-400">{stats.byRiskLevel.LOW || 0}</p>
+                <p className="text-3xl font-bold text-emerald-400">
+                  {stats.byRiskLevel.low ?? stats.byRiskLevel.LOW ?? 0}
+                </p>
               </GlassCard>
             </div>
 
