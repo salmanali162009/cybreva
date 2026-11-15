@@ -5,6 +5,7 @@ import GlassCard from '../../components/common/GlassCard';
 import RiskBadge from '../../components/common/RiskBadge';
 import LoadingState from '../../components/common/LoadingState';
 import EmptyState from '../../components/common/EmptyState';
+import DeleteConfirmModal from '../../components/common/DeleteConfirmModal';
 import { scanApi } from '../../services/api';
 import { FiClock, FiTrash2, FiMessageSquare, FiMail, FiGlobe, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { formatDate, SCAN_TYPE_LABELS } from '../../utils/riskUtils';
@@ -19,6 +20,8 @@ export default function ScanHistoryPage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [type, setType] = useState('');
+  const [scanToDelete, setScanToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchHistory = useCallback(async () => {
     try {
@@ -33,14 +36,29 @@ export default function ScanHistoryPage() {
 
   useEffect(() => { fetchHistory(); }, [fetchHistory]);
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this scan record?')) return;
+  const handleOpenDeleteModal = (scan) => {
+    setScanToDelete(scan);
+  };
+
+  const handleCancelDelete = () => {
+    if (isDeleting) return;
+    setScanToDelete(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!scanToDelete || isDeleting) return;
     try {
-      await scanApi.deleteScan(id);
+      setIsDeleting(true);
+      await scanApi.deleteScan(scanToDelete._id);
       toast.success('Scan deleted');
-      setScans((s) => s.filter((scan) => scan._id !== id));
-      setPagination((p) => ({ ...p, total: p.total - 1 }));
-    } catch (err) { toast.error(err.message || 'Delete failed'); }
+      setScans((s) => s.filter((scan) => scan._id !== scanToDelete._id));
+      setPagination((p) => ({ ...p, total: Math.max(0, p.total - 1) }));
+      setScanToDelete(null);
+    } catch (err) {
+      toast.error(err.message || 'Delete failed');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -91,9 +109,13 @@ export default function ScanHistoryPage() {
                       </span>
                     )}
                     <RiskBadge level={scan.riskLevel} size="sm" />
-                    <button onClick={() => handleDelete(scan._id)}
+                    <button
+                      type="button"
+                      onClick={() => handleOpenDeleteModal(scan)}
                       className="text-slate-600 hover:text-red-400 transition-colors p-1"
-                      title="Delete scan">
+                      title="Delete scan"
+                      aria-label={`Delete ${scan.scanType} scan`}
+                    >
                       <FiTrash2 size={14} />
                     </button>
                   </div>
@@ -119,6 +141,25 @@ export default function ScanHistoryPage() {
             </button>
           </div>
         )}
+
+        {/* Custom Delete Confirmation Modal */}
+        <DeleteConfirmModal
+          isOpen={!!scanToDelete}
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+          title="Delete Scan History?"
+          description="Are you sure you want to delete this scan record? This action cannot be undone."
+          itemDetails={
+            scanToDelete
+              ? {
+                  type: `${scanToDelete.scanType} scan`,
+                  date: formatDate(scanToDelete.createdAt),
+                  preview: scanToDelete.originalInput?.slice(0, 80) || '—',
+                }
+              : null
+          }
+          isDeleting={isDeleting}
+        />
       </div>
     </DashboardLayout>
   );
