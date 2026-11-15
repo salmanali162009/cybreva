@@ -22,9 +22,9 @@ export const sendTokenCookie = (res, token) => {
 
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
-    secure: isProduction,           // HTTPS only in production
-    sameSite: isProduction ? 'strict' : 'lax',
-    maxAge: expireDays * 24 * 60 * 60 * 1000, // milliseconds
+    secure: isProduction,                      // HTTPS required for SameSite=None
+    sameSite: isProduction ? 'none' : 'lax',   // 'none' allows cross-origin cookies between Vercel & Render
+    maxAge: expireDays * 24 * 60 * 60 * 1000,  // milliseconds
     path: '/',
   });
 };
@@ -33,8 +33,12 @@ export const sendTokenCookie = (res, token) => {
  * Clear the auth cookie (logout).
  */
 export const clearTokenCookie = (res) => {
+  const isProduction = process.env.NODE_ENV === 'production';
+
   res.cookie(COOKIE_NAME, '', {
     httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
     expires: new Date(0),
     path: '/',
   });

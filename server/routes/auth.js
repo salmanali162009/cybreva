@@ -23,8 +23,8 @@ router.post('/login', authLimiter, login);
 router.post('/forgot-password', authLimiter, forgotPassword);
 router.post('/reset-password', authLimiter, resetPassword);
 
-// Protected auth routes
-router.post('/logout', protect, logout);
+// Auth routes
+router.post('/logout', logout);
 router.get('/me', protect, getMe);
 router.put('/me', protect, updateProfile);
 router.put('/change-password', protect, changePassword);

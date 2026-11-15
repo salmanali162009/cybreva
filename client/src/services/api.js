@@ -1,29 +1,97 @@
-// src/services/api.js — Centralized Axios instance
+// src/services/api.js — Centralized Production Axios instance
 import axios from 'axios';
 
+// Resolve production API base URL with fallback
+const rawBaseURL =
+  import.meta.env.VITE_API_BASE_URL ||
+  import.meta.env.VITE_API_URL ||
+  'https://cybreva.onrender.com/api';
+
+// Sanitize: strip trailing slash to avoid duplicate slashes
+const baseURL = rawBaseURL.replace(/\/+$/, '');
+
+// Guard to prevent duplicate backend wake-up requests (session-persisted & in-memory)
+let isWarmedUp = false;
+
+/**
+ * Sends a lightweight, non-blocking GET request to /api/health to wake up
+ * Render's free tier instance in the background as soon as a visitor opens the site.
+ */
+export const warmupBackend = () => {
+  if (isWarmedUp) return;
+
+  if (typeof window !== 'undefined') {
+    try {
+      if (sessionStorage.getItem('cybreva_backend_warmed')) {
+        isWarmedUp = true;
+        return;
+      }
+      sessionStorage.setItem('cybreva_backend_warmed', 'true');
+    } catch (_) {
+      // Fallback silently if sessionStorage is unavailable (e.g. private browsing restrictions)
+    }
+  }
+
+  isWarmedUp = true;
+
+  // Fire-and-forget background ping to Render health check
+  fetch(`${baseURL}/health`, {
+    method: 'GET',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'omit',
+  }).catch(() => {
+    // Silently ignore any network failures or timeouts during initial spin-up
+  });
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
-  withCredentials: true, // send HTTP-only cookies
-  headers: { 'Content-Type': 'application/json' },
-  timeout: 30000,
+  baseURL,
+  withCredentials: true, // Send HTTP-only cross-site cookies
+  headers: {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  },
+  timeout: 60000, // 60s timeout to gracefully accommodate Render cold starts
 });
 
-// Response interceptor: unwrap data or throw structured error
+// Response interceptor: unwrap data or format structured error
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const message =
-      error.response?.data?.message ||
-      error.message ||
-      'An unexpected error occurred';
-    const errors = error.response?.data?.errors || [];
     const status = error.response?.status;
+    const responseData = error.response?.data;
+    const errors = responseData?.errors || [];
 
-    // Attach a clean error object
+    let message = responseData?.message;
+
+    if (!message) {
+      if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        message = 'Request timed out. The security server may be waking up from standby. Please retry in a few seconds.';
+      } else if (!error.response) {
+        message = 'Unable to connect to Cybreva security server. If the server was idle, it may take up to 45 seconds to spin up. Please retry.';
+      } else if (status === 401) {
+        message = 'Your session has expired or you are unauthorized. Please sign in again.';
+      } else if (status === 403) {
+        message = 'Access denied. You do not have permission to perform this action.';
+      } else if (status === 404) {
+        message = 'The requested security endpoint could not be found.';
+      } else if (status === 429) {
+        message = 'Rate limit exceeded. Please wait a moment before sending another scan.';
+      } else if (status >= 500) {
+        message = 'Cybreva threat intelligence server encountered an error. Please try again shortly.';
+      } else {
+        message = error.message || 'An unexpected error occurred.';
+      }
+    }
+
+    // Attach structured error details
     const err = new Error(message);
     err.status = status;
     err.errors = errors;
     err.originalError = error;
+    err.isColdStart = !error.response || error.code === 'ECONNABORTED';
+
     return Promise.reject(err);
   },
 );

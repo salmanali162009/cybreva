@@ -1,9 +1,21 @@
 // src/pages/public/HomePage.jsx
 import { Link } from 'react-router-dom';
-import { FiShield, FiMessageSquare, FiMail, FiGlobe, FiCpu, FiCheck, FiArrowRight, FiChevronDown } from 'react-icons/fi';
+import {
+  FiShield,
+  FiMessageSquare,
+  FiMail,
+  FiGlobe,
+  FiCpu,
+  FiCheck,
+  FiArrowRight,
+  FiChevronDown,
+  FiSearch,
+  FiLayers,
+} from 'react-icons/fi';
 import { useState } from 'react';
 import MainLayout from '../../components/layout/MainLayout';
 import SEO from '../../components/common/SEO';
+import { useAuth } from '../../context/AuthContext';
 
 const FEATURES = [
   { icon: FiMessageSquare, title: 'Message Scanner', color: '#10B981', desc: 'Detect phishing language, urgency tactics, and scam patterns in any text message.' },
@@ -45,6 +57,7 @@ function FaqItem({ q, a }) {
 }
 
 export default function HomePage() {
+  const { user } = useAuth();
   const orgSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
@@ -98,60 +111,215 @@ export default function HomePage() {
         keywords="scam checker, phishing detector, safe browsing, url safety check, sms scam detection, ai security, online threat intelligence"
         schema={[orgSchema, websiteSchema, faqSchema]}
       />
-      {/* Hero */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full opacity-10"
-            style={{ background: 'radial-gradient(circle,#10B981,transparent 70%)' }} />
+      {/* ── Premium Cybersecurity Hero Section ──────────────────────── */}
+      <section className="relative min-h-[92vh] flex items-center overflow-hidden pt-10 pb-20">
+        {/* Subtle Cyber Grid & Ambient Lighting Background */}
+        <div className="absolute inset-0 pointer-events-none select-none">
+          {/* Digital Grid Pattern */}
+          <div
+            className="absolute inset-0 opacity-[0.035]"
+            style={{
+              backgroundImage:
+                'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
+              backgroundSize: '36px 36px',
+            }}
+          />
+
+          {/* Glowing Radial Gradients */}
+          <div
+            className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full opacity-20 blur-[120px]"
+            style={{ background: 'radial-gradient(circle, #0DB07B 0%, rgba(6,182,212,0.4) 60%, transparent 80%)' }}
+          />
+          <div
+            className="absolute top-1/3 right-10 w-[450px] h-[450px] rounded-full opacity-15 blur-[130px]"
+            style={{ background: 'radial-gradient(circle, #06B6D4 0%, rgba(139,92,246,0.3) 60%, transparent 80%)' }}
+          />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium mb-6"
-            style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', color: '#10B981' }}>
-            <FiShield size={12} />
-            AI-Powered Online Safety Platform
-          </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            {/* Left Column — Content & CTAs */}
+            <div className="lg:col-span-7 text-center lg:text-left z-10">
+              {/* Badge */}
+              <div
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold mb-6 shadow-sm tracking-wide"
+                style={{
+                  background: 'rgba(13,176,123,0.1)',
+                  border: '1px solid rgba(13,176,123,0.3)',
+                  color: '#0DB07B',
+                }}
+              >
+                <span className="w-2 h-2 rounded-full bg-[#0DB07B] animate-pulse" />
+                <FiShield size={13} className="text-[#0DB07B]" />
+                <span className="tracking-wider uppercase">AI-POWERED ONLINE SECURITY</span>
+              </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
-            Check Before
-            <br />
-            <span className="gradient-text">You Trust.</span>
-          </h1>
+              {/* Main Heading */}
+              <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-extrabold text-white tracking-tight leading-[1.14] mb-6">
+                Stay One Step Ahead of{' '}
+                <span className="bg-gradient-to-r from-[#0DB07B] via-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">
+                  Online Scams.
+                </span>
+              </h1>
 
-          <p className="text-slate-400 text-lg sm:text-xl max-w-2xl mx-auto mb-8 leading-relaxed">
-            Cybreva uses AI and real-time threat intelligence to help you identify scams,
-            phishing attempts, and malicious websites — before you click or respond.
-          </p>
+              {/* Description */}
+              <p className="text-slate-300 sm:text-lg text-base max-w-2xl mx-auto lg:mx-0 mb-8 leading-relaxed font-normal">
+                Analyze suspicious messages, phishing emails, and website links with Cybreva AI.
+                Identify potential warning signs and make safer decisions before you click, share, or trust.
+              </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-12">
-            <Link to="/register"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all"
-              style={{ background: 'linear-gradient(135deg,#10B981,#059669)' }}>
-              Start Scanning Free
-              <FiArrowRight />
-            </Link>
-            <Link to="/#how-it-works"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-slate-300 transition-all"
-              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
-              See How It Works
-            </Link>
-          </div>
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-10">
+                <Link
+                  to={user ? '/dashboard' : '/register'}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-bold text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.02] hover:shadow-emerald-500/30 active:scale-[0.98]"
+                  style={{ background: 'linear-gradient(135deg, #0DB07B 0%, #059669 100%)' }}
+                >
+                  <FiSearch size={17} />
+                  <span>Check for Scams</span>
+                  <FiArrowRight size={16} />
+                </Link>
 
-          {/* Scanner preview cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto">
-            {FEATURES.map((f) => {
-              const Icon = f.icon;
-              return (
-                <div key={f.title} className="glass rounded-xl p-4 text-center hover:border-white/10 transition-all">
-                  <div className="w-9 h-9 rounded-lg mx-auto mb-2 flex items-center justify-center"
-                    style={{ background: `${f.color}18` }}>
-                    <Icon style={{ color: f.color }} size={18} />
+                <Link
+                  to="/features"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-slate-200 hover:text-white glass border border-white/10 hover:border-white/20 transition-all hover:bg-white/[0.07]"
+                >
+                  <FiLayers size={16} className="text-cyan-400" />
+                  <span>Explore Security Tools</span>
+                </Link>
+              </div>
+
+              {/* Trust & Value Indicators */}
+              <div className="pt-6 border-t border-white/5 flex flex-wrap items-center justify-center lg:justify-start gap-y-3 gap-x-6 sm:gap-x-8 text-xs sm:text-sm text-slate-400 font-medium">
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center text-[#0DB07B]">
+                    <FiCheck size={13} />
                   </div>
-                  <p className="text-white text-xs font-medium">{f.title}</p>
+                  <span className="text-slate-300">AI-Powered Analysis</span>
                 </div>
-              );
-            })}
+
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-400">
+                    <FiCheck size={13} />
+                  </div>
+                  <span className="text-slate-300">Multiple Security Checks</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                    <FiCheck size={13} />
+                  </div>
+                  <span className="text-slate-300">Clear Risk Insights</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column — Cybersecurity Visual Composition */}
+            <div className="lg:col-span-5 relative flex items-center justify-center mt-6 lg:mt-0">
+              <div className="relative w-full max-w-[420px] sm:max-w-[460px] h-[420px] sm:h-[460px] flex items-center justify-center">
+                {/* Outer Radar / Orbit Ring */}
+                <div className="absolute inset-4 rounded-full border border-dashed border-emerald-500/20 pointer-events-none" />
+
+                {/* Secondary Orbit Ring */}
+                <div className="absolute inset-14 rounded-full border border-white/5 pointer-events-none" />
+
+                {/* Soft Glowing Pulsing Ambient Sphere */}
+                <div
+                  className="absolute w-52 h-52 rounded-full opacity-40 blur-3xl animate-pulse-glow pointer-events-none"
+                  style={{ background: 'radial-gradient(circle, #0DB07B, #06B6D4 70%, transparent)' }}
+                />
+
+                {/* Central Shield Core */}
+                <div className="relative z-20 flex flex-col items-center">
+                  <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-3xl glass-2 border border-emerald-500/30 shadow-2xl shadow-emerald-500/20 flex items-center justify-center p-5 group transition-transform hover:scale-105">
+                    {/* Corner Tech Accents */}
+                    <div className="absolute top-1.5 left-1.5 w-2 h-2 border-t-2 border-l-2 border-emerald-400/60 rounded-tl-sm" />
+                    <div className="absolute top-1.5 right-1.5 w-2 h-2 border-t-2 border-r-2 border-emerald-400/60 rounded-tr-sm" />
+                    <div className="absolute bottom-1.5 left-1.5 w-2 h-2 border-b-2 border-l-2 border-emerald-400/60 rounded-bl-sm" />
+                    <div className="absolute bottom-1.5 right-1.5 w-2 h-2 border-b-2 border-r-2 border-emerald-400/60 rounded-br-sm" />
+
+                    {/* Official Cybreva Shield Logo */}
+                    <img
+                      src="/logo.png"
+                      alt="Cybreva AI Shield Emblem"
+                      className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-[0_0_16px_rgba(13,176,123,0.45)]"
+                    />
+                  </div>
+
+                  {/* Core Status Tag */}
+                  <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#111C2E]/90 border border-emerald-500/30 text-[11px] font-semibold text-emerald-400 shadow-md backdrop-blur-md">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                    <span>Active Scam Defense</span>
+                  </div>
+                </div>
+
+                {/* Floating Glass Telemetry Cards */}
+
+                {/* Card 1: Message Scam Detection (Top-Left) */}
+                <div className="absolute -top-1 left-0 sm:-left-3 z-30 animate-float-1">
+                  <div className="glass rounded-xl p-3 sm:p-3.5 border border-white/10 shadow-xl backdrop-blur-xl flex items-center gap-3 hover:border-emerald-500/40 transition-colors">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-emerald-500/15 flex items-center justify-center text-[#0DB07B] flex-shrink-0">
+                      <FiMessageSquare size={16} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white text-xs font-bold">Message Scam</span>
+                        <span className="text-[9px] uppercase px-1.5 py-0.5 rounded font-bold bg-emerald-500/20 text-emerald-400">SMS & Chat</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400">Urgency & Phishing Heuristics</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card 2: Email Security Analysis (Top-Right) */}
+                <div className="absolute top-10 -right-2 sm:-right-4 z-30 animate-float-2">
+                  <div className="glass rounded-xl p-3 sm:p-3.5 border border-white/10 shadow-xl backdrop-blur-xl flex items-center gap-3 hover:border-cyan-500/40 transition-colors">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-cyan-500/15 flex items-center justify-center text-cyan-400 flex-shrink-0">
+                      <FiMail size={16} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white text-xs font-bold">Email Security</span>
+                        <span className="text-[9px] uppercase px-1.5 py-0.5 rounded font-bold bg-cyan-500/20 text-cyan-400">BEC Audit</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400">Spoofing & Lure Detection</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card 3: Website Safety Check (Bottom-Left) */}
+                <div className="absolute bottom-12 -left-2 sm:-left-4 z-30 animate-float-3">
+                  <div className="glass rounded-xl p-3 sm:p-3.5 border border-white/10 shadow-xl backdrop-blur-xl flex items-center gap-3 hover:border-purple-500/40 transition-colors">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-purple-500/15 flex items-center justify-center text-purple-400 flex-shrink-0">
+                      <FiGlobe size={16} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white text-xs font-bold">Website Safety</span>
+                        <span className="text-[9px] uppercase px-1.5 py-0.5 rounded font-bold bg-purple-500/20 text-purple-400">Threat Intel</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400">Google Web Risk & Malware</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card 4: AI Security Assistant (Bottom-Right) */}
+                <div className="absolute -bottom-2 right-0 sm:-right-2 z-30 animate-float-4">
+                  <div className="glass rounded-xl p-3 sm:p-3.5 border border-white/10 shadow-xl backdrop-blur-xl flex items-center gap-3 hover:border-amber-500/40 transition-colors">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-amber-500/15 flex items-center justify-center text-amber-400 flex-shrink-0">
+                      <FiCpu size={16} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white text-xs font-bold">AI Assistant</span>
+                        <span className="text-[9px] uppercase px-1.5 py-0.5 rounded font-bold bg-amber-500/20 text-amber-400">Advisory</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400">Guided Threat Clarifications</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
