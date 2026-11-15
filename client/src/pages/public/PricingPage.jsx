@@ -16,7 +16,7 @@ export default function PricingPage() {
       price: '0.00',
       priceCurrency: 'USD',
       availability: 'https://schema.org/InStock',
-      url: 'https://cybreva.com/pricing'
+      url: 'https://cybreva.vercel.app/pricing'
     }
   };
 
@@ -30,7 +30,7 @@ export default function PricingPage() {
       <SEO
         title="Cybreva Pricing — Transparent & Free Online Safety Plans"
         description="Explore Cybreva pricing. Start free with full message, email, and website scam detection tools. No credit card required, no artificial hidden fees."
-        canonical="https://cybreva.com/pricing"
+        canonical="https://cybreva.vercel.app/pricing"
         keywords="cybreva pricing, free scam checker, free phishing scanner, safe browsing tools pricing, free cybersecurity tools"
         schema={[productSchema]}
       />

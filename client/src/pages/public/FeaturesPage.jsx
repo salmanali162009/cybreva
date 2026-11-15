@@ -93,7 +93,7 @@ export default function FeaturesPage() {
     name: 'Cybreva Security Suite',
     applicationCategory: 'SecurityApplication',
     operatingSystem: 'All web browsers',
-    url: 'https://cybreva.com/features',
+    url: 'https://cybreva.vercel.app/features',
     description: 'Cloud-based scam detection and threat intelligence platform featuring Message, Email, Website scanners and an AI Security Assistant.',
     offers: {
       '@type': 'Offer',
@@ -103,7 +103,7 @@ export default function FeaturesPage() {
     publisher: {
       '@type': 'Organization',
       name: 'Cybreva',
-      url: 'https://cybreva.com',
+      url: 'https://cybreva.vercel.app',
     },
   };
 
@@ -112,7 +112,7 @@ export default function FeaturesPage() {
       <SEO
         title="Cybreva Security Features — Message, Email & Website Scanners"
         description="Explore Cybreva's suite of AI and threat intelligence tools: Message Scam Checker, Email Phishing Analyzer, Website Safety Checker, and AI Security Assistant."
-        canonical="https://cybreva.com/features"
+        canonical="https://cybreva.vercel.app/features"
         keywords="scam detection tools, website safety checker, phishing email analyzer, message scam detection, ai security assistant"
         schema={softwareSchema}
       />

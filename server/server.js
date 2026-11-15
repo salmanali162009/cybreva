@@ -41,7 +41,7 @@ app.use(helmet());
 const allowedOrigins = [
   process.env.CLIENT_URL,
   'http://localhost:5173', // Vite default
-  'http://localhost:3000',
+  'https://cybreva.vercel.app/', // Vercel deployment
 ].filter(Boolean);
 
 app.use(

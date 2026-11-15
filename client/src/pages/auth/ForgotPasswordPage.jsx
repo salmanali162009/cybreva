@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
       <SEO
         title="Reset Password — Cybreva Account Recovery"
         description="Request account recovery and password reset instructions for your Cybreva online security account."
-        canonical="https://cybreva.com/forgot-password"
+        canonical="https://cybreva.vercel.app/forgot-password"
         noindex={true}
       />
       <div className="w-full max-w-md">

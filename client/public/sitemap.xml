@@ -2,31 +2,31 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Core Public Pages -->
   <url>
-    <loc>https://cybreva.com/</loc>
+    <loc>https://cybreva.vercel.app/</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://cybreva.com/features</loc>
+    <loc>https://cybreva.vercel.app/features</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://cybreva.com/about</loc>
+    <loc>https://cybreva.vercel.app/about</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://cybreva.com/pricing</loc>
+    <loc>https://cybreva.vercel.app/pricing</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://cybreva.com/contact</loc>
+    <loc>https://cybreva.vercel.app/contact</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -34,25 +34,25 @@
 
   <!-- Public Educational Scanners -->
   <url>
-    <loc>https://cybreva.com/scanners/message</loc>
+    <loc>https://cybreva.vercel.app/scanners/message</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://cybreva.com/scanners/email</loc>
+    <loc>https://cybreva.vercel.app/scanners/email</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://cybreva.com/scanners/website</loc>
+    <loc>https://cybreva.vercel.app/scanners/website</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://cybreva.com/ai-assistant</loc>
+    <loc>https://cybreva.vercel.app/ai-assistant</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -60,7 +60,7 @@
 
   <!-- Blog Listing -->
   <url>
-    <loc>https://cybreva.com/blog</loc>
+    <loc>https://cybreva.vercel.app/blog</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -68,49 +68,49 @@
 
   <!-- 8 High-Impact Educational Blog Articles -->
   <url>
-    <loc>https://cybreva.com/blog/how-to-identify-a-scam-website</loc>
+    <loc>https://cybreva.vercel.app/blog/how-to-identify-a-scam-website</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://cybreva.com/blog/how-to-recognize-phishing-emails</loc>
+    <loc>https://cybreva.vercel.app/blog/how-to-recognize-phishing-emails</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://cybreva.com/blog/common-online-payment-scams</loc>
+    <loc>https://cybreva.vercel.app/blog/common-online-payment-scams</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://cybreva.com/blog/how-to-identify-fake-messages</loc>
+    <loc>https://cybreva.vercel.app/blog/how-to-identify-fake-messages</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://cybreva.com/blog/what-is-website-risk-analysis</loc>
+    <loc>https://cybreva.vercel.app/blog/what-is-website-risk-analysis</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://cybreva.com/blog/how-to-stay-safe-from-otp-scams</loc>
+    <loc>https://cybreva.vercel.app/blog/how-to-stay-safe-from-otp-scams</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://cybreva.com/blog/ai-scam-detection-benefits-and-limitations</loc>
+    <loc>https://cybreva.vercel.app/blog/ai-scam-detection-benefits-and-limitations</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://cybreva.com/blog/how-to-verify-a-suspicious-link</loc>
+    <loc>https://cybreva.vercel.app/blog/how-to-verify-a-suspicious-link</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
@@ -118,13 +118,13 @@
 
   <!-- Legal & Transparency Pages -->
   <url>
-    <loc>https://cybreva.com/privacy</loc>
+    <loc>https://cybreva.vercel.app/privacy</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://cybreva.com/terms</loc>
+    <loc>https://cybreva.vercel.app/terms</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>

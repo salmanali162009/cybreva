@@ -21,13 +21,13 @@ export default function AboutPage() {
     '@context': 'https://schema.org',
     '@type': 'AboutPage',
     name: 'About Cybreva — AI-Powered Online Safety Platform',
-    url: 'https://cybreva.com/about',
+    url: 'https://cybreva.vercel.app/about',
     description: 'Learn about Cybreva mission to protect internet users from scams, phishing, and online fraud through transparent AI analysis and global threat feeds.',
     mainEntity: {
       '@type': 'Organization',
       name: 'Cybreva',
-      url: 'https://cybreva.com',
-      logo: 'https://cybreva.com/logo.png',
+      url: 'https://cybreva.vercel.app',
+      logo: 'https://cybreva.vercel.app/logo.png',
       foundingDate: '2026',
       slogan: 'Check Before You Trust'
     }
@@ -43,7 +43,7 @@ export default function AboutPage() {
       <SEO
         title="About Cybreva — AI Online Safety & Threat Intelligence"
         description="Learn about Cybreva mission to protect internet users from scams, phishing, and online fraud through transparent AI analysis and global threat feeds."
-        canonical="https://cybreva.com/about"
+        canonical="https://cybreva.vercel.app/about"
         keywords="about cybreva, online safety company, cyber scam prevention, ai threat intelligence, safe browsing organization"
         schema={[aboutSchema]}
       />

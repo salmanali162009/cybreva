@@ -37,7 +37,7 @@ export default function LoginPage() {
       <SEO
         title="Login to Cybreva — AI Online Safety & Threat Platform"
         description="Sign in to your Cybreva account to access AI scam detection, review saved scan history, and analyze suspicious text messages, emails, and URLs."
-        canonical="https://cybreva.com/login"
+        canonical="https://cybreva.vercel.app/login"
         noindex={true}
       />
       <div className="w-full max-w-md">

@@ -212,7 +212,7 @@ All scan endpoints require authentication. Results are persisted per user.
 
 ### Frontend (e.g. Vercel, Netlify)
 
-1. Set `VITE_API_URL` to your production backend URL (e.g. `https://api.cybreva.com/api`).
+1. Set `VITE_API_URL` to your production backend URL (e.g. `https://cybreva.vercel.app/api`).
 2. Build command: `npm run build`
 3. Output directory: `dist`
 4. **SPA routing**: configure your host to serve `index.html` for all routes.

@@ -35,7 +35,7 @@ export default function RegisterPage() {
       <SEO
         title="Create Free Account — Cybreva AI Scam Protection"
         description="Join Cybreva for free. Protect against smishing, phishing emails, and malicious website links with instant AI threat intelligence and personal scan history."
-        canonical="https://cybreva.com/register"
+        canonical="https://cybreva.vercel.app/register"
         noindex={true}
       />
       <div className="w-full max-w-md">

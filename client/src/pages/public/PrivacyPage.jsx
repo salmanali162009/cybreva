@@ -14,7 +14,7 @@ export default function PrivacyPage() {
       <SEO
         title="Privacy Policy — Cybreva Data Handling & Protection"
         description="Read Cybreva privacy policy: transparent data practices, TLS encryption, HTTP-only authentication, and our strict zero-data-selling guarantee."
-        canonical="https://cybreva.com/privacy"
+        canonical="https://cybreva.vercel.app/privacy"
         keywords="cybreva privacy policy, data protection, secure scam scanning, user privacy cybersecurity"
       />
 

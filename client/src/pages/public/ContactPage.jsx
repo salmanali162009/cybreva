@@ -31,12 +31,12 @@ export default function ContactPage() {
     '@type': 'ContactPage',
     name: 'Contact Cybreva Security Team',
     description: 'Get in touch with Cybreva for threat intelligence reporting, API licensing queries, feedback, or general security inquiries.',
-    url: 'https://cybreva.com/contact',
+    url: 'https://cybreva.vercel.app/contact',
     mainEntity: {
       '@type': 'Organization',
       name: 'Cybreva',
       email: 'contact@cybreva.com',
-      url: 'https://cybreva.com',
+      url: 'https://cybreva.vercel.app',
       contactPoint: {
         '@type': 'ContactPoint',
         contactType: 'Customer Support & Threat Inquiries',
@@ -51,7 +51,7 @@ export default function ContactPage() {
       <SEO
         title="Contact Cybreva — Support, Security Feedback & Threat Reporting"
         description="Connect with the Cybreva security and research team. Report suspected scam campaigns, request support, or inquire about threat intelligence integrations."
-        canonical="https://cybreva.com/contact"
+        canonical="https://cybreva.vercel.app/contact"
         keywords="contact cybreva, report scam website, cybersecurity support, threat intelligence inquiries"
         schema={contactSchema}
       />

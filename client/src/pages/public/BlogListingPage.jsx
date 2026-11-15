@@ -32,18 +32,18 @@ export default function BlogListingPage() {
     '@type': 'Blog',
     name: 'Cybreva Security & Anti-Fraud Blog',
     description: 'Expert research, actionable guides, and educational insights on scam prevention, phishing defense, and online threat intelligence.',
-    url: 'https://cybreva.com/blog',
+    url: 'https://cybreva.vercel.app/blog',
     publisher: {
       '@type': 'Organization',
       name: 'Cybreva',
-      url: 'https://cybreva.com',
-      logo: 'https://cybreva.com/logo.png',
+      url: 'https://cybreva.vercel.app',
+      logo: 'https://cybreva.vercel.app/logo.png',
     },
     blogPost: BLOG_POSTS.map((post) => ({
       '@type': 'BlogPosting',
       headline: post.title,
       description: post.description,
-      url: `https://cybreva.com/blog/${post.slug}`,
+      url: `https://cybreva.vercel.app/blog/${post.slug}`,
       datePublished: post.publishedDate,
       dateModified: post.modifiedDate,
       author: {
@@ -58,7 +58,7 @@ export default function BlogListingPage() {
       <SEO
         title="Cybreva Blog — Scam Prevention, Phishing Defense & Web Safety Insights"
         description="Explore research-backed educational guides on spotting scam websites, identifying smishing, preventing payment fraud, and navigating online threats safely."
-        canonical="https://cybreva.com/blog"
+        canonical="https://cybreva.vercel.app/blog"
         keywords="scam prevention blog, phishing defense guides, online safety tips, cybersecurity education, cybreva research"
         schema={blogSchema}
       />

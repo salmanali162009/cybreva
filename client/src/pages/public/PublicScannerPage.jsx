@@ -29,7 +29,7 @@ const SCANNER_CONFIGS = {
     title: 'AI Message Scam Checker | Free SMS & Smishing Detector',
     description: 'Scan SMS, WhatsApp, and chat messages for smishing, fake bank alerts, impersonation, and fraudulent links with Cybreva real-time AI security scanner.',
     keywords: 'message scam checker, smishing detector, fake sms detector, whatsapp scam checker, text message fraud, ai scam detection',
-    canonical: 'https://cybreva.com/scanners/message',
+    canonical: 'https://cybreva.vercel.app/scanners/message',
     heading: 'AI Message Scam & Smishing Checker',
     badge: 'SMS & Instant Message Protection',
     badgeColor: '#10B981',
@@ -73,7 +73,7 @@ const SCANNER_CONFIGS = {
     title: 'Phishing Email Checker | AI Email Scam Detector — Cybreva',
     description: 'Detect phishing emails, spoofed sender domains, malicious attachments, and credential harvesting schemes with Cybreva AI-powered email threat analyzer.',
     keywords: 'phishing email checker, email scam detector, spoofed email analyzer, credential harvesting, business email compromise, ai email security',
-    canonical: 'https://cybreva.com/scanners/email',
+    canonical: 'https://cybreva.vercel.app/scanners/email',
     heading: 'AI Phishing Email Analyzer & Detector',
     badge: 'Email Threat & BEC Defense',
     badgeColor: '#06B6D4',
@@ -111,7 +111,7 @@ const SCANNER_CONFIGS = {
     title: 'Website Safety Checker | Malicious URL & Scam Scanner',
     description: 'Verify website safety and detect malware, typosquatting, fraudulent e-commerce stores, and phishing domains with real-time Google Web Risk and AI scanning.',
     keywords: 'website safety checker, check url safety, scam website scanner, phishing link detector, malware website check, safe browsing scanner',
-    canonical: 'https://cybreva.com/scanners/website',
+    canonical: 'https://cybreva.vercel.app/scanners/website',
     heading: 'Website Safety & Malicious URL Scanner',
     badge: 'Real-Time Threat Intelligence',
     badgeColor: '#8B5CF6',
@@ -149,7 +149,7 @@ const SCANNER_CONFIGS = {
     title: 'AI Security Assistant | Interactive Cyber Threat Advice',
     description: 'Ask Cybreva AI anything about online scams, suspicious files, credential safety, and incident recovery with real-time security guidance and best practices.',
     keywords: 'ai security assistant, cyber threat advisor, online scam questions, incident recovery ai, cybersecurity consultation, fraud detection assistant',
-    canonical: 'https://cybreva.com/ai-assistant',
+    canonical: 'https://cybreva.vercel.app/ai-assistant',
     heading: 'Cybreva AI Security Assistant',
     badge: 'Interactive Threat Guidance',
     badgeColor: '#F59E0B',
@@ -211,7 +211,7 @@ export default function PublicScannerPage({ type = 'message' }) {
     publisher: {
       '@type': 'Organization',
       name: 'Cybreva',
-      url: 'https://cybreva.com'
+      url: 'https://cybreva.vercel.app'
     }
   };
 

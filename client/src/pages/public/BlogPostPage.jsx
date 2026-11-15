@@ -60,12 +60,12 @@ export default function BlogPostPage() {
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.description,
-    url: `https://cybreva.com/blog/${post.slug}`,
+    url: `https://cybreva.vercel.app/blog/${post.slug}`,
     datePublished: post.publishedDate,
     dateModified: post.modifiedDate,
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://cybreva.com/blog/${post.slug}`,
+      '@id': `https://cybreva.vercel.app/blog/${post.slug}`,
     },
     author: {
       '@type': 'Person',
@@ -75,10 +75,10 @@ export default function BlogPostPage() {
     publisher: {
       '@type': 'Organization',
       name: 'Cybreva',
-      url: 'https://cybreva.com',
+      url: 'https://cybreva.vercel.app',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://cybreva.com/logo.png',
+        url: 'https://cybreva.vercel.app/logo.png',
       },
     },
     keywords: post.keywords,
@@ -95,7 +95,7 @@ export default function BlogPostPage() {
       <SEO
         title={post.seoTitle}
         description={post.description}
-        canonical={`https://cybreva.com/blog/${post.slug}`}
+        canonical={`https://cybreva.vercel.app/blog/${post.slug}`}
         keywords={post.keywords}
         ogType="article"
         publishedTime={post.publishedDate}

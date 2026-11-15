@@ -11,7 +11,7 @@ export default function SEO({
   canonical,
   keywords,
   ogType = 'website',
-  ogImage = 'https://cybreva.com/logo.png',
+  ogImage = 'https://cybreva.vercel.app/logo.png',
   schema,
   noindex = false,
   publishedTime,
@@ -50,7 +50,7 @@ export default function SEO({
     setMetaTag('name', 'robots', noindex ? 'noindex, nofollow' : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
 
     // 3. Canonical Link
-    const canonicalUrl = canonical || (typeof window !== 'undefined' ? window.location.href.split('?')[0] : 'https://cybreva.com');
+    const canonicalUrl = canonical || (typeof window !== 'undefined' ? window.location.href.split('?')[0] : 'https://cybreva.vercel.app');
     let linkCanonical = document.querySelector('link[rel="canonical"]');
     if (!linkCanonical) {
       linkCanonical = document.createElement('link');

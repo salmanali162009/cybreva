@@ -17,14 +17,14 @@ Cybreva provides multi-layered heuristics, rule-based detection, real-time threa
 - **Limitations**: Cybreva provides informed security assessments, not guarantees. Clean threat intelligence results indicate absence in known threat databases, not absolute safety. New or targeted phishing domains may evade early database catalogs. Cryptographic email verification (SPF, DKIM, DMARC) requires raw RFC822 MIME headers.
 
 ## Key Public Resources
-- Website: https://cybreva.com
-- Security Features: https://cybreva.com/features
-- How It Works & Transparency: https://cybreva.com/about
-- Transparent Pricing: https://cybreva.com/pricing
-- Contact & Support: https://cybreva.com/contact
-- Educational Blog: https://cybreva.com/blog
-- Privacy Policy: https://cybreva.com/privacy
-- Terms of Service: https://cybreva.com/terms
+- Website: https://cybreva.vercel.app
+- Security Features: https://cybreva.vercel.app/features
+- How It Works & Transparency: https://cybreva.vercel.app/about
+- Transparent Pricing: https://cybreva.vercel.app/pricing
+- Contact & Support: https://cybreva.vercel.app/contact
+- Educational Blog: https://cybreva.vercel.app/blog
+- Privacy Policy: https://cybreva.vercel.app/privacy
+- Terms of Service: https://cybreva.vercel.app/terms
 
 ## Contact & Editorial Information
 - Publisher: Cybreva Security Research & Product Team

@@ -14,7 +14,7 @@ export default function TermsPage() {
       <SEO
         title="Terms of Service — Cybreva Online Safety Platform"
         description="Review Cybreva terms of service: acceptable use policies, disclaimer of warranties, non-guarantee notices, and user responsibilities."
-        canonical="https://cybreva.com/terms"
+        canonical="https://cybreva.vercel.app/terms"
         keywords="cybreva terms of service, user agreement, acceptable use policy, security disclaimer"
       />
 

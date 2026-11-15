@@ -50,8 +50,8 @@ export default function HomePage() {
     '@type': 'Organization',
     name: 'Cybreva',
     alternateName: 'Cybreva AI',
-    url: 'https://cybreva.com',
-    logo: 'https://cybreva.com/logo.png',
+    url: 'https://cybreva.vercel.app',
+    logo: 'https://cybreva.vercel.app/logo.png',
     description: 'Global AI-powered scam, phishing, and malicious threat detection platform.',
     sameAs: [
       'https://twitter.com/cybreva',
@@ -68,10 +68,10 @@ export default function HomePage() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Cybreva',
-    url: 'https://cybreva.com',
+    url: 'https://cybreva.vercel.app',
     potentialAction: {
       '@type': 'SearchAction',
-      target: 'https://cybreva.com/blog?q={search_term_string}',
+      target: 'https://cybreva.vercel.app/blog?q={search_term_string}',
       'query-input': 'required name=search_term_string'
     }
   };
@@ -94,7 +94,7 @@ export default function HomePage() {
       <SEO
         title="Cybreva — AI-Powered Online Safety & Scam Detection"
         description="Verify suspicious text messages, emails, and website links before you trust. Real-time scam detection powered by AI and global threat intelligence."
-        canonical="https://cybreva.com/"
+        canonical="https://cybreva.vercel.app/"
         keywords="scam checker, phishing detector, safe browsing, url safety check, sms scam detection, ai security, online threat intelligence"
         schema={[orgSchema, websiteSchema, faqSchema]}
       />
