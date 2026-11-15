@@ -11,8 +11,12 @@ import { COOKIE_NAME } from '../constants/index.js';
  * Protects routes — must be logged in.
  */
 export const protect = asyncHandler(async (req, res, next) => {
-  // Read token from HTTP-only cookie
-  const token = req.cookies?.[COOKIE_NAME];
+  // Read token from HTTP-only cookie, or fallback to Authorization header
+  let token = req.cookies?.[COOKIE_NAME];
+
+  if (!token && req.headers.authorization?.startsWith('Bearer ')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
 
   if (!token) {
     throw new AppError('You are not logged in. Please log in to get access.', 401);

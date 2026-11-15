@@ -18,13 +18,22 @@ export const generateToken = (userId) => {
  */
 export const sendTokenCookie = (res, token) => {
   const expireDays = parseInt(process.env.COOKIE_EXPIRE, 10) || 7;
-  const isProduction = process.env.NODE_ENV === 'production';
+
+  // Cross-site HTTPS deployment detection:
+  // Evaluates true if NODE_ENV=production, or CLIENT_URL is HTTPS, or running on Render
+  const isHttpsDeployment =
+    process.env.NODE_ENV === 'production' ||
+    process.env.CLIENT_URL?.startsWith('https://') ||
+    process.env.RENDER === 'true' ||
+    Boolean(process.env.RENDER_SERVICE_ID) ||
+    Boolean(process.env.RENDER_INSTANCE_ID);
 
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
-    secure: isProduction,                      // HTTPS required for SameSite=None
-    sameSite: isProduction ? 'none' : 'lax',   // 'none' allows cross-origin cookies between Vercel & Render
-    maxAge: expireDays * 24 * 60 * 60 * 1000,  // milliseconds
+    secure: isHttpsDeployment,                        // Required by browsers for SameSite=None
+    sameSite: isHttpsDeployment ? 'none' : 'lax',     // Cross-origin between Vercel & Render
+    partitioned: isHttpsDeployment,                  // CHIPS: Required for Chrome/Edge cross-site cookie handling
+    maxAge: expireDays * 24 * 60 * 60 * 1000,        // milliseconds
     path: '/',
   });
 };
@@ -33,12 +42,18 @@ export const sendTokenCookie = (res, token) => {
  * Clear the auth cookie (logout).
  */
 export const clearTokenCookie = (res) => {
-  const isProduction = process.env.NODE_ENV === 'production';
+  const isHttpsDeployment =
+    process.env.NODE_ENV === 'production' ||
+    process.env.CLIENT_URL?.startsWith('https://') ||
+    process.env.RENDER === 'true' ||
+    Boolean(process.env.RENDER_SERVICE_ID) ||
+    Boolean(process.env.RENDER_INSTANCE_ID);
 
   res.cookie(COOKIE_NAME, '', {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'none' : 'lax',
+    secure: isHttpsDeployment,
+    sameSite: isHttpsDeployment ? 'none' : 'lax',
+    partitioned: isHttpsDeployment,
     expires: new Date(0),
     path: '/',
   });

@@ -38,7 +38,12 @@ const isProduction = process.env.NODE_ENV === 'production';
 app.set('trust proxy', 1);
 
 // ── Security headers ──────────────────────────
-app.use(helmet());
+// Allow cross-origin requests from the Vercel frontend domain
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  }),
+);
 
 // ── CORS ──────────────────────────────────────
 const allowedOrigins = [
@@ -52,24 +57,24 @@ const allowedOrigins = [
   .filter(Boolean)
   .map((origin) => origin.trim().replace(/\/$/, ''));
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
-      if (!origin) return callback(null, true);
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
+    if (!origin) return callback(null, true);
 
-      const normalizedOrigin = origin.trim().replace(/\/$/, '');
-      if (allowedOrigins.includes(normalizedOrigin)) {
-        return callback(null, true);
-      }
-      callback(new Error(`CORS: origin "${origin}" not allowed.`));
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-    optionsSuccessStatus: 204,
-  }),
-);
+    const normalizedOrigin = origin.trim().replace(/\/$/, '');
+    if (allowedOrigins.includes(normalizedOrigin)) {
+      return callback(null, true);
+    }
+    return callback(null, false);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
 
 // ── Request parsing ───────────────────────────
 app.use(express.json({ limit: BODY_SIZE_LIMIT }));
