@@ -40,14 +40,14 @@ export const chat = asyncHandler(async (req, res) => {
     assistantReply = await chatWithAssistant(recentMessages);
   } catch (err) {
     const groqStatus = err?.status || err?.statusCode;
-    if (groqStatus === 404 || err?.message?.includes('model')) {
+    if (groqStatus === 429) {
+      throw new AppError('AI service rate limit reached. Please try again later.', 429);
+    }
+    if (groqStatus === 404 || (groqStatus === 400 && err?.message?.toLowerCase().includes('model_not_found'))) {
       throw new AppError(
         'The configured AI model is not available on this account. Please update GROQ_MODEL in your environment configuration.',
         503,
       );
-    }
-    if (groqStatus === 429) {
-      throw new AppError('AI service rate limit reached. Please try again later.', 429);
     }
     throw new AppError('AI assistant is temporarily unavailable. Please try again later.', 503);
   }

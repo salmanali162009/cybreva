@@ -1,6 +1,6 @@
 // src/main.jsx
 import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { createRoot, hydrateRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { warmupBackend } from './services/api'
@@ -8,8 +8,18 @@ import { warmupBackend } from './services/api'
 // Wake up Render backend in background as soon as the visitor visits the website
 warmupBackend();
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+const rootElement = document.getElementById('root');
+if (rootElement && rootElement.hasChildNodes()) {
+  hydrateRoot(
+    rootElement,
+    <StrictMode>
+      <App />
+    </StrictMode>
+  );
+} else if (rootElement) {
+  createRoot(rootElement).render(
+    <StrictMode>
+      <App />
+    </StrictMode>
+  );
+}

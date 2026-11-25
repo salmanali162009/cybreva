@@ -72,6 +72,12 @@ export const INDICATOR_WEIGHTS = Object.freeze({
 export const TEXT_INDICATOR_RULES = [
   // ── CRITICAL SEVERITY ──────────────────────
   {
+    id: 'GUARANTEED_INVESTMENT_RETURNS',
+    severity: 'CRITICAL',
+    label: 'Guaranteed Unrealistic Investment Returns',
+    regex: /(?:guaranteed\s+(?:returns?|profits?|payouts?|income|yield|\$\d+|[0-9]+%)|invest\s+(?:just\s+|only\s+)?\$?\d+[\s\S]{0,50}(?:receive|get|earn|make|payout)[\s\S]{0,30}\$?\d+|turn\s+\$?\d+\s+into\s+\$?\d+|double\s+your\s+(?:money|investment|crypto|funds|cash|deposit)|(?:100%|daily|weekly|hourly)\s+guaranteed\s+(?:returns?|profit)|high\s*yield\s*investment\s*program)/i,
+  },
+  {
     id: 'OTP_REQUEST',
     severity: 'CRITICAL',
     label: 'OTP / Secret Verification Code Solicitation',
@@ -87,7 +93,7 @@ export const TEXT_INDICATOR_RULES = [
     id: 'CRYPTO_WIRE_EXTORTION',
     severity: 'CRITICAL',
     label: 'Demands Cryptocurrency or Untraceable Wire Transfer',
-    regex: /(?:send|transfer|pay|deposit).{0,30}(?:bitcoin|btc|usdt|eth|ethereum|crypto|gift card|western union|moneygram)|pay into (?:this|our) (?:bitcoin|btc|wallet) address/i,
+    regex: /(?:send|transfer|pay|deposit).{0,35}(?:bitcoin|btc|usdt|eth|ethereum|crypto|cryptocurrency|gift card|western union|moneygram|cashapp|cash app|venmo|zelle)|pay into (?:this|our) (?:bitcoin|btc|wallet) address/i,
   },
   {
     id: 'LEGAL_ARREST_THREAT',
@@ -103,6 +109,18 @@ export const TEXT_INDICATOR_RULES = [
   },
 
   // ── HIGH SEVERITY ──────────────────────────
+  {
+    id: 'NO_RISK_CLAIM',
+    severity: 'HIGH',
+    label: 'No-Risk / 100% Risk-Free Guarantee',
+    regex: /\b(?:no\s+risk|zero\s+risk|100%\s+risk[- ]free|risk[- ]free\s+(?:investment|trading|opportunity|returns?)|no\s+experience\s+(?:needed|required|necessary)|no\s+loss\s+guarantee)\b/i,
+  },
+  {
+    id: 'UNREALISTIC_PROFIT_PROMISE',
+    severity: 'HIGH',
+    label: 'Unrealistic Profit Promise or Rapid Wealth Scheme',
+    regex: /(?:earn\s+\$?\d+\s+(?:daily|per day|hourly|a day|every day|per week)|passive\s+income\s+(?:daily|guaranteed)|make\s+money\s+(?:fast|instantly|overnight)|get\s+rich\s+(?:quick|fast)|instant\s+(?:profit|withdrawal|cashout))/i,
+  },
   {
     id: 'ACCOUNT_SUSPENSION_URGENT',
     severity: 'HIGH',
@@ -144,8 +162,8 @@ export const TEXT_INDICATOR_RULES = [
   {
     id: 'PRESSURE_TACTIC',
     severity: 'MEDIUM',
-    label: 'Urgency and Pressure Tactics',
-    regex: /\b(?:urgent|act immediately|time sensitive|expires in \d+ (?:hours?|minutes?)|immediate action required|respond now)\b/i,
+    label: 'Artificial Urgency and Pressure Tactics',
+    regex: /\b(?:urgent|act\s+immediately|time\s+sensitive|expires?\s+in\s+\d+\s+(?:hours?|minutes?|days?)|within\s+\d+\s+(?:hours?|minutes?|days?)|immediate\s+action\s+required|respond\s+now|limited\s+(?:opportunity|offer|spots?|time|availability)|only\s+\d+\s+(?:slots?|spots?|seats?)\s+left|act\s+fast\s+before|last\s+chance|before\s+it'?s\s+too\s+late|hurry\s+up)\b/i,
   },
   {
     id: 'UNSOLICITED_LINK_CLICK',
@@ -171,7 +189,7 @@ export const TEXT_INDICATOR_RULES = [
     id: 'GENERIC_CALL_TO_ACTION',
     severity: 'LOW',
     label: 'Unusual Promotional or Action Call',
-    regex: /\b(?:exclusive offer|limited time only|act now before it is gone)\b/i,
+    regex: /\b(?:exclusive offer|act now before it is gone)\b/i,
   },
 ];
 
@@ -424,4 +442,163 @@ export const createStandardResult = ({
     disclaimer,
     ...metadata,
   };
+};
+
+/**
+ * Synthesizes heuristic indicators and AI analysis into a unified, mathematically consistent assessment.
+ * Prevents contradictions where AI flags high risk but score stays 0/low.
+ * Also handles AI unavailability according to security requirements (never defaulting to fake 0/low).
+ */
+export const synthesizeScanAssessment = ({
+  heuristicIndicators = [],
+  aiResult = null,
+  scanType = 'message',
+  disclaimer = AI_DISCLAIMER,
+  metadata = {},
+  fallbackLimitations = [],
+}) => {
+  // 1. Compile heuristic indicators into a label map
+  const indicatorMap = new Map();
+  for (const ind of heuristicIndicators) {
+    const label = typeof ind === 'string' ? ind : ind.label;
+    if (label) {
+      indicatorMap.set(label.toLowerCase(), {
+        label,
+        severity: ind.severity || 'MEDIUM',
+        weight: ind.weight || INDICATOR_WEIGHTS.MEDIUM,
+      });
+    }
+  }
+
+  // 2. Base heuristic calculation
+  const heuristicScore = calculateWeightedScore(heuristicIndicators);
+  const heuristicLevel = scoreToRiskLevel(heuristicScore);
+
+  // 3. Process AI results
+  const isAiAvailable = !!(aiResult && aiResult.available !== false);
+  const structured = aiResult?.structured || null;
+
+  let assessmentStatus = 'completed';
+  const assessmentLimitations = [...fallbackLimitations];
+
+  if (!isAiAvailable) {
+    assessmentStatus = 'partial';
+    assessmentLimitations.push(
+      'AI deep analysis is temporarily unavailable; results are based on deterministic heuristic detection.'
+    );
+  }
+
+  // 4. Ingest AI detected indicators if present
+  if (structured?.detectedIndicators && Array.isArray(structured.detectedIndicators)) {
+    for (const rawAiInd of structured.detectedIndicators) {
+      if (typeof rawAiInd === 'string' && rawAiInd.trim()) {
+        const cleanInd = rawAiInd.trim();
+        const key = cleanInd.toLowerCase();
+        if (!indicatorMap.has(key)) {
+          indicatorMap.set(key, {
+            label: cleanInd,
+            severity: 'HIGH',
+            weight: INDICATOR_WEIGHTS.HIGH,
+          });
+        }
+      }
+    }
+  }
+
+  const finalIndicators = Array.from(indicatorMap.values()).map((i) => i.label);
+
+  // 5. Dual-score reconciliation and synthesis
+  let finalScore = heuristicScore;
+  let finalLevel = heuristicLevel;
+
+  if (isAiAvailable) {
+    const aiScore =
+      structured?.riskScore !== null &&
+      structured?.riskScore !== undefined &&
+      typeof structured.riskScore === 'number' &&
+      !isNaN(structured.riskScore)
+        ? Math.max(0, Math.min(100, Math.round(structured.riskScore)))
+        : null;
+
+    const aiLevel =
+      structured?.riskLevel && typeof structured.riskLevel === 'string'
+        ? structured.riskLevel.toLowerCase()
+        : null;
+
+    // A. Reconcile based on AI threat identification
+    if (aiLevel === RISK_LEVELS.CRITICAL || (aiScore !== null && aiScore >= 75)) {
+      const minCritical = aiScore !== null ? Math.max(aiScore, 75) : 85;
+      finalScore = Math.max(finalScore, minCritical);
+    } else if (aiLevel === RISK_LEVELS.HIGH || (aiScore !== null && aiScore >= 50)) {
+      const minHigh = aiScore !== null ? Math.max(aiScore, 50) : 65;
+      finalScore = Math.max(finalScore, minHigh);
+    } else if (aiLevel === RISK_LEVELS.MEDIUM || (aiScore !== null && aiScore >= 25)) {
+      const minMedium = aiScore !== null ? Math.max(aiScore, 25) : 35;
+      finalScore = Math.max(finalScore, minMedium);
+    } else if (heuristicIndicators.length === 0 && (aiLevel === RISK_LEVELS.LOW || (aiScore !== null && aiScore < 25))) {
+      // Both heuristics and AI agree there are no threats
+      finalScore = aiScore !== null ? Math.min(15, aiScore) : 0;
+    }
+
+    // B. Heuristic severity floors — static evidence of threat cannot be downgraded by AI
+    finalScore = Math.max(finalScore, heuristicScore);
+    if (heuristicLevel === RISK_LEVELS.CRITICAL) {
+      finalScore = Math.max(finalScore, 75);
+    } else if (heuristicLevel === RISK_LEVELS.HIGH) {
+      finalScore = Math.max(finalScore, 50);
+    }
+
+    finalLevel = scoreToRiskLevel(finalScore);
+  } else {
+    // AI is unavailable
+    if (heuristicIndicators.length === 0) {
+      // Unassessed / unknown: never return fake 0 or false low risk
+      finalScore = null;
+      finalLevel = RISK_LEVELS.UNKNOWN;
+      assessmentStatus = 'partial';
+      assessmentLimitations.push(
+        'Assessment could not be definitively completed: AI analysis service was unavailable and no deterministic scam patterns were matched.'
+      );
+    } else {
+      // Retain heuristic score
+      finalScore = heuristicScore;
+      finalLevel = heuristicLevel;
+    }
+  }
+
+  // 6. Explanation
+  let aiAnalysis = '';
+  if (isAiAvailable) {
+    aiAnalysis =
+      structured?.explanation ||
+      aiResult?.text ||
+      (finalIndicators.length > 0
+        ? `Threat indicators identified: ${finalIndicators.join(', ')}.`
+        : 'No scam patterns or malicious indicators detected in this content.');
+  } else {
+    aiAnalysis =
+      heuristicIndicators.length > 0
+        ? `Assessment based on heuristic detection (${heuristicIndicators.length} threat indicator(s) found). AI deep analysis was unavailable.`
+        : 'Assessment could not be completed because the AI analysis service was unavailable and no deterministic scam signatures were detected.';
+  }
+
+  // 7. Recommendations
+  let recommendations = [];
+  if (structured?.recommendations && Array.isArray(structured.recommendations) && structured.recommendations.length > 0) {
+    recommendations = structured.recommendations;
+  } else {
+    recommendations = buildStandardRecommendations(finalLevel, finalIndicators);
+  }
+
+  return createStandardResult({
+    riskScore: finalScore,
+    riskLevel: finalLevel,
+    detectedIndicators: finalIndicators,
+    aiAnalysis,
+    recommendations,
+    assessmentStatus,
+    assessmentLimitations,
+    disclaimer,
+    metadata,
+  });
 };

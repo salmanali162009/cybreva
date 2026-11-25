@@ -12,6 +12,7 @@ import {
   analyzeUrlHeuristics,
   buildStandardRecommendations,
   createStandardResult,
+  synthesizeScanAssessment,
   INDICATOR_WEIGHTS,
 } from '../services/scanners/riskEngine.js';
 import { parseAndValidateUrl, normalizeUrl } from '../services/scanners/urlUtils.js';
@@ -45,31 +46,23 @@ export const scanMessage = asyncHandler(async (req, res) => {
     }
   }
 
-  // 3. Compute score and risk level
-  const riskScore = calculateWeightedScore(indicators);
-  const riskLevel = scoreToRiskLevel(riskScore);
+  // 3. Compute heuristic baseline
+  const heuristicScore = calculateWeightedScore(indicators);
+  const heuristicLevel = scoreToRiskLevel(heuristicScore);
   const detectedLabels = indicators.map((i) => i.label);
 
-  // 4. AI explanation
+  // 4. AI explanation & deep threat analysis
   const aiResult = await analyzeWithGroq(message, 'message', {
     detectedIndicators: detectedLabels,
-    riskLevel,
-    riskScore,
+    riskLevel: heuristicLevel,
+    riskScore: heuristicScore,
   });
 
-  const aiAnalysis = aiResult.text || String(aiResult);
-  const assessmentStatus = aiResult.available ? 'completed' : 'partial';
-  const assessmentLimitations = aiResult.available
-    ? []
-    : ['AI deep analysis is temporarily unavailable; results are based on heuristic rule detection.'];
-
-  const result = createStandardResult({
-    riskScore,
-    riskLevel,
-    detectedIndicators: detectedLabels,
-    aiAnalysis,
-    assessmentStatus,
-    assessmentLimitations,
+  // 5. Synthesize indicators and dual score consistently
+  const result = synthesizeScanAssessment({
+    heuristicIndicators: indicators,
+    aiResult,
+    scanType: SCAN_TYPES.MESSAGE,
     disclaimer: AI_DISCLAIMER,
   });
 
@@ -146,37 +139,31 @@ export const scanEmail = asyncHandler(async (req, res) => {
     }
   }
 
-  // 4. Compute calibrated score and risk level
-  const riskScore = calculateWeightedScore(indicators);
-  const riskLevel = scoreToRiskLevel(riskScore);
+  // 4. Compute heuristic baseline
+  const heuristicScore = calculateWeightedScore(indicators);
+  const heuristicLevel = scoreToRiskLevel(heuristicScore);
   const detectedLabels = indicators.map((i) => i.label);
 
-  // 5. AI explanation
+  // 5. AI explanation & deep threat analysis
   const aiResult = await analyzeWithGroq(combined, 'email', {
     detectedIndicators: detectedLabels,
-    riskLevel,
-    riskScore,
+    riskLevel: heuristicLevel,
+    riskScore: heuristicScore,
   });
 
-  const aiAnalysis = aiResult.text || String(aiResult);
-  const assessmentStatus = aiResult.available ? 'completed' : 'partial';
-  const assessmentLimitations = [
+  const emailLimitations = [
     'Email sender headers (SPF, DKIM, DMARC) cannot be cryptographically verified without raw RFC822 MIME headers.',
   ];
-  if (!aiResult.available) {
-    assessmentLimitations.push('AI deep analysis is temporarily unavailable; results are based on heuristic rule detection.');
-  }
 
-  const result = createStandardResult({
-    riskScore,
-    riskLevel,
-    detectedIndicators: detectedLabels,
-    aiAnalysis,
-    assessmentStatus,
-    assessmentLimitations,
+  // 6. Synthesize indicators and dual score consistently
+  const result = synthesizeScanAssessment({
+    heuristicIndicators: indicators,
+    aiResult,
+    scanType: SCAN_TYPES.EMAIL,
     disclaimer:
       AI_DISCLAIMER +
       ' This tool cannot verify the cryptographic authenticity of an email sender.',
+    fallbackLimitations: emailLimitations,
   });
 
   let scanRecord = null;
@@ -292,10 +279,15 @@ export const scanWebsite = asyncHandler(async (req, res) => {
     riskScore,
   });
 
-  const aiAnalysis = aiResult.text || String(aiResult);
+  const aiAnalysis = aiResult.structured?.explanation || aiResult.text || String(aiResult);
   if (!aiResult.available) {
     assessmentLimitations.push('AI summary service was temporarily unavailable.');
   }
+
+  const recommendations =
+    aiResult.structured?.recommendations && Array.isArray(aiResult.structured.recommendations) && aiResult.structured.recommendations.length > 0
+      ? aiResult.structured.recommendations
+      : [];
 
   const providerResults = {
     google: {
@@ -320,6 +312,7 @@ export const scanWebsite = asyncHandler(async (req, res) => {
     riskLevel,
     detectedIndicators: allIndicators,
     aiAnalysis,
+    recommendations,
     assessmentStatus,
     assessmentLimitations,
     disclaimer:
